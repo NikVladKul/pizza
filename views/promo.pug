@@ -1,0 +1,31 @@
+section.promo
+	div.container
+		div(class="row justify-content-between")
+			div(class="col-4 d-flex flex-column")
+				div
+					h2 Сегодня акция!!!
+				div
+					img(src="/img/cart-action.svg" alt="action" style="width: 37%")
+				div.action
+					h3(class="name-goods" id="name-goods")
+			div.col-4
+				div(id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel")
+					div(class="carousel-inner" id="carousel-inner")
+						-var i=0;
+						each goods in stock
+							if i==0
+								div(class="carousel-item active")
+									a(href="#" class="open-card")
+										img(src=goods.img alt=goods.name class="d-block w-100" data-id=goods.id data-name=goods.name data-cost=goods.cost)
+									-i=1;
+							else
+								div(class="carousel-item")
+									a(href="#" class="open-card")
+										img(src=goods.img alt=goods.name class="d-block w-100" data-id=goods.id data-name=goods.name data-cost=goods.cost)
+			div.col-4
+				div(class="cart-order d-flex flex-column justify-content-between")
+					h2(class="card-title") Корзина
+					div(class="align-items-center")
+						img(src="/img/cart.svg" alt="" style="width: 50%")
+					button(class="btn btn-primary create-order") Оформить
+

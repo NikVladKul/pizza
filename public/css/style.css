@@ -1,0 +1,170 @@
+.container {
+  max-width: 1200px;
+}
+
+header {
+  /*background-color: #c8dbe3;*/
+  background-image: url("../img/prpmo_bg.jpg");
+  background-size: cover;
+  color: #eee;
+  padding: 5px;
+  border-bottom: 5px solid wheat;
+}
+
+.logo,
+.login {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.logo img {
+  width: 90px;
+}
+
+.promo h1 {
+  color: #eee;
+}
+
+section.promo {
+  background-image: url("../img/prpmo_bg.jpg");
+  background-size: cover;
+  color: #eee;
+  text-align: center;
+}
+
+div.promo {
+  display: flex;
+  align-items: center;
+}
+
+.carousel-inner {
+  height: 25vh;
+  width: 25vh;
+}
+
+.main nav,
+.wraper {
+  background-color: wheat;
+  font-size: 24px;
+}
+
+.main .content {
+  background-color: beige;
+}
+
+.nav-link,
+.nav-link:visited,
+.nav-link:focus,
+.nav-link:hover {
+  color: #444;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  background-color: tan;
+}
+
+.nav-link:hover {
+  font-weight: bold;
+}
+
+nav.nav {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 100%;
+}
+
+.btn-primary {
+  background-color: wheat;
+  border-color: #444;
+  color: #444;
+}
+
+.btn-primary:focus {
+  background-color: wheat;
+  border: 1px solid #444;
+  color: #444;
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  font-weight: bold;
+  border-color: #444;
+  color: #444;
+  background-color: tan;
+}
+
+.popup__bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.5s all;
+  z-index: 1000;
+}
+
+.popup__bg.active {
+  opacity: 1;
+  pointer-events: all;
+  transition: 0.5s all;
+}
+
+.popup-good {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background-color: beige;
+  min-width: 300px;
+  transition: 0.5s all;
+}
+
+.popup-good.active {
+  transform: translate(-50%, -50%) scale(1);
+  transition: 0.5s all;
+}
+
+.close-popup {
+  position: absolute;
+  width: 60px;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.popup-good p {
+  text-indent: 40px;
+}
+
+.popup-header {
+  background-color: wheat;
+  padding: 15px;
+}
+
+.popup-footer {
+  padding: 25px;
+}
+
+.popup-form-good.img {
+  width: 100%;
+}
+
+.cart-order {
+  transform: scale(0);
+  transition: 0.5s all;
+}
+
+.cart-order.active {
+  transform: scale(1);
+  transition: 0.5s all;
+}
+
+section.footer {
+  height: 2000px;
+}

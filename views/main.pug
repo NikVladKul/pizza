@@ -1,0 +1,28 @@
+section.main
+	div.container
+		div.row
+			div(class="wraper col-3")
+				nav(class="nav flex-column")
+					-var i=0;
+					each val in category
+						if val.id == 0
+							p #{val.name}
+						else
+							if i == 0
+								a(class="nav-link active" href="#" data-id=val.id) #{val.name}
+								-i++;
+							else
+								a(class="nav-link" href="#" data-id=val.id) #{val.name}
+			div(class="content col-9")
+				div(class="row" id="content")
+					each item in goods
+						div(class="col-sm-6 col-md-4")
+							div(class="card text-center h-100")
+								div(class="card-body d-flex flex-column justify-content-between")
+									h3(class="card-title") #{item.name}
+									div(class="align-items-center")
+										a(href="#" class="open-card")
+											img(src=item.img class="card-img" data-id=item.id alt=item.name)
+										h2(class="card-text") #{item.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}руб.
+									button(class="btn btn-primary add-to-cart" data-id=item.id) В корзину
+
