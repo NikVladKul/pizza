@@ -10,7 +10,7 @@ app.use(express.static('public'));
 
 db.connectDb();
 
-app.get('/', (request, response) => {
+app.get('/', (request, response) => { // стартовая страница
     let category;
     let goods;
     db.getAllCategory()
@@ -29,7 +29,7 @@ app.get('/', (request, response) => {
         });
 });
 
-app.use("/mysql", function (request, response) {
+app.use("/mysql", function (request, response) { // запросы к базе
     if (request.query.goods_in_cat) {
         db.getGoodsInCategory(request.query.goods_in_cat)
             .then((result) => response.json(result));

@@ -1,28 +1,39 @@
-//let goodForPopup = { id: 0, name: "", img: "", description: "", cost: 0 }
-let cart = {};
-let cartOrder = document.querySelector('.cart-order');
+let cart = {}; // Корзина
+let cartOrder = document.querySelector('.cart-order'); // Оформление корзины
 let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
-let popupGood = document.querySelector('.popup-good'); // Само окно
-let closePopupButton = document.querySelector('.close-popup'); // Кнопка для 
-let content = document.getElementById("content");
-let carousel = document.getElementById("carousel-inner");
-let addToCart = document.querySelectorAll(".add-to-cart");
-content.addEventListener('click', function (event) { getGoodId(event) });
-carousel.addEventListener('click', function (event) { getGoodId(event) });
-
+let popupGood = document.querySelector('.popup-good'); // Само окно попап
+let closePopupButton = document.querySelector('.close-popup'); // Кнопка для закрытия попап
+let content = document.getElementById("content"); // Содержимое категории
+let carousel = document.getElementById("carousel-inner"); // Карусель
+//let createOrder = document.getElementById("create-order"); // кнопка оформить покупку
+content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
+carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
+popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
+cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
+  console.log(cart);
+});
 
 function getGoodId(event) {
   event.preventDefault();
-  if (event.target.tagName === "IMG") {
+  if ((event.target.tagName === "IMG") && (event.currentTarget === content)) { // Если клик по картинке открываем попап
     let url = "/mysql?good_id=" + event.target.dataset.id;
     fetch(url).then((result) => result.json()).then((body) => fillPopupGood(body[0]));
 
     popupBg.classList.add('active'); // Добавляем класс 'active' для фона
     popupGood.classList.add('active');
+  } else if (event.target.tagName === "BUTTON") { // Если клик по кнопке добавляем в корзину
+    if ("id" + event.target.dataset.id in cart) {
+      cart["id" + event.target.dataset.id] += 1;
+    } else {
+      cart["id" + event.target.dataset.id] = 1;
+    }
+  }
+  if (cart) {
+    cartOrder.classList.add('active');
   }
 }
 
-function fillPopupGood(good) {
+function fillPopupGood(good) { // Заполняем попап форму
   let elems = document.querySelectorAll(".popup-form-good");
   for (let i = 0; i < elems.length; i++) {
     if (elems[i].classList.contains("id")) elems[i].dataset.id = good.id;
@@ -45,19 +56,18 @@ document.addEventListener('click', (e) => { // Вешаем обработчик
   }
 });
 
-for (let i = 0; i < addToCart.length; i++) {
-  addToCart[i].addEventListener('click', (event) => {
-    if ("id" + event.target.dataset.id in cart) {
-      cart["id" + event.target.dataset.id] += 1;
-    } else {
-      cart["id" + event.target.dataset.id] = 1;
-    }
-    if (cart) {
-      cartOrder.classList.add('active');
-    }
-    console.log(cart);
-  });
-}
+//popupGood.addEventListener('click', (event) => { // Добавляем обработчик на кнопкe в попапе
+//  console.log(event.currentTarget);
+//  if ("id" + event.target.dataset.id in cart) {
+//    cart["id" + event.target.dataset.id] += 1;
+//  } else {
+//    cart["id" + event.target.dataset.id] = 1;
+//  }
+//  if (cart) {
+//    cartOrder.classList.add('active');
+//  }
+//});
+
 
 
 

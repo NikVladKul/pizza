@@ -1,5 +1,6 @@
-let navs = document.querySelectorAll("a.nav-link");
-for (let i = 0; i < navs.length; i++) {
+let navs = document.querySelectorAll("a.nav-link"); // Все категории
+
+for (let i = 0; i < navs.length; i++) { // вешаем обработчик на все категории
   navs[i].addEventListener('click', function (event) {
     for (let i = 0; i < navs.length; i++) {
       if (navs[i].classList.contains('active')) navs[i].classList.remove('active');
@@ -11,7 +12,7 @@ for (let i = 0; i < navs.length; i++) {
   });
 }
 
-function getGoodInCat(event) {
+function getGoodInCat(event) { // запрос: все продукты из выбранной категории
   event.preventDefault();
   let url = "/mysql?goods_in_cat=" + event.target.dataset.id;
   fetch(url)

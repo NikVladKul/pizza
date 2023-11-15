@@ -163,6 +163,7 @@ nav.nav {
 .cart-order.active {
   transform: scale(1);
   transition: 0.5s all;
+  cursor: pointer;
 }
 
 section.footer {
