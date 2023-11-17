@@ -15,7 +15,7 @@ cartOrder.addEventListener('click', function (event) { // обработчик �
 
 function getGoodId(event) {
   event.preventDefault();
-  if ((event.target.tagName === "IMG") && (event.currentTarget === content)) { // Если клик по картинке открываем попап
+  if ((event.target.tagName === "IMG") && ((event.currentTarget === content) || (event.currentTarget === carousel))) { // Если клик по картинке открываем попап
     let url = "/mysql?good_id=" + event.target.dataset.id;
     fetch(url).then((result) => result.json()).then((body) => fillPopupGood(body[0]));
 
@@ -28,7 +28,7 @@ function getGoodId(event) {
       cart["id" + event.target.dataset.id] = 1;
     }
   }
-  if (cart) {
+  if (Object.keys(cart).length !== 0) {
     cartOrder.classList.add('active');
   }
 }
