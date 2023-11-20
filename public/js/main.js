@@ -2,15 +2,18 @@ let cart = {}; // Корзина
 let cartOrder = document.querySelector('.cart-order'); // Оформление корзины
 let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
 let popupGood = document.querySelector('.popup-good'); // Само окно попап
-let closePopupButton = document.querySelector('.close-popup'); // Кнопка для закрытия попап
+let popupLogin = document.querySelector('.popup-login'); // Само окно попап
+let closePopupButton = document.querySelectorAll('.close-popup'); // Кнопка для закрытия попап
 let content = document.getElementById("content"); // Содержимое категории
 let carousel = document.getElementById("carousel-inner"); // Карусель
-//let createOrder = document.getElementById("create-order"); // кнопка оформить покупку
 content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
 carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
 popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
+
 cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
   console.log(cart);
+  popupBg.classList.add('active'); // Добавляем класс 'active' для фона
+  popupLogin.classList.add('active');
 });
 
 function getGoodId(event) {
@@ -44,29 +47,23 @@ function fillPopupGood(good) { // Заполняем попап форму
   }
 }
 
-closePopupButton.addEventListener('click', () => { // Вешаем обработчик на крестик
-  popupBg.classList.remove('active'); // Убираем активный класс с фона
-  popupGood.classList.remove('active');;
-});
+for (let i = 0; i < closePopupButton.length; i++) {
+  closePopupButton[i].addEventListener('click', () => { // Вешаем обработчик на крестик
+    popupBg.classList.remove('active'); // Убираем активный класс с фона
+    popupGood.classList.remove('active');
+    popupLogin.classList.remove('active');
+  });
+
+}
 
 document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
   if (e.target === popupBg) { // Если цель клика - фот, то:
     popupBg.classList.remove('active'); // Убираем активный класс с фона
     popupGood.classList.remove('active'); // И с окна
+    popupLogin.classList.remove('active'); // И с окна
   }
 });
 
-//popupGood.addEventListener('click', (event) => { // Добавляем обработчик на кнопкe в попапе
-//  console.log(event.currentTarget);
-//  if ("id" + event.target.dataset.id in cart) {
-//    cart["id" + event.target.dataset.id] += 1;
-//  } else {
-//    cart["id" + event.target.dataset.id] = 1;
-//  }
-//  if (cart) {
-//    cartOrder.classList.add('active');
-//  }
-//});
 
 
 

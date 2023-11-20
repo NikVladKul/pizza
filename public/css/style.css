@@ -115,17 +115,45 @@ nav.nav {
   transition: 0.5s all;
 }
 
-.popup-good {
+.popup-good,
+.popup-login {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
   background-color: beige;
-  min-width: 300px;
+  min-width: 400px;
   transition: 0.5s all;
 }
 
-.popup-good.active {
+.popup-login-header .nav {
+  min-height: 80px;
+  font-size: 25px;
+}
+
+.tab-content .tab-pane {
+  min-height: 300px;
+  padding: 10px;
+}
+
+.tab-content section {
+  clear: both;
+  text-align: right;
+  line-height: 25px;
+  margin-bottom: 10px;
+}
+
+.tab-content label {
+  float: left;
+  padding-right: 10px;
+}
+
+.tab-content {
+  float: left;
+}
+
+.popup-good.active,
+.popup-login.active {
   transform: translate(-50%, -50%) scale(1);
   transition: 0.5s all;
 }

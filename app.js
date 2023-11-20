@@ -51,6 +51,10 @@ app.use("/mysql", function (request, response) { // запросы к базе
     }
 });
 
+app.post('/login/password', function (request, response) {
+    console.log(cart);
+})
+
 
 httpServer.listen(8000, () => { console.log('HTTP слушает 8000') });
 // For https

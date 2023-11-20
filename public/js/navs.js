@@ -1,15 +1,17 @@
 let navs = document.querySelectorAll("a.nav-link"); // Все категории
 
 for (let i = 0; i < navs.length; i++) { // вешаем обработчик на все категории
-  navs[i].addEventListener('click', function (event) {
-    for (let i = 0; i < navs.length; i++) {
-      if (navs[i].classList.contains('active')) navs[i].classList.remove('active');
-      if (navs[i] == event.target) {
-        navs[i].classList.add('active');
-        getGoodInCat(event);
+  if (navs[i].parentNode.tagName === 'NAV') {
+    navs[i].addEventListener('click', function (event) {
+      for (let i = 0; i < navs.length; i++) {
+        if (navs[i].classList.contains('active')) navs[i].classList.remove('active');
+        if (navs[i] == event.target) {
+          navs[i].classList.add('active');
+          getGoodInCat(event);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function getGoodInCat(event) { // запрос: все продукты из выбранной категории
