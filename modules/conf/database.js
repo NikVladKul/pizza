@@ -91,7 +91,7 @@ class DataBase {
                 isRoot tinyint DEFAULT NULL,
                 isAdmin tinyint DEFAULT NULL,
                 isCoock tinyint DEFAULT NULL,
-                salt varchar(45) DEFAULT NULL,
+                salt varchar(64) DEFAULT NULL,
                 UNIQUE KEY phone_UNIQUE (phone),
                 UNIQUE KEY name_UNIQUE (name)) 
                 ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, res) {
