@@ -1,3 +1,6 @@
 node_modules/
+cert/
+tmp/
 /gitpwd.txt
+config.env
 #/.gitignore
