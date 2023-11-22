@@ -1,0 +1,7 @@
+[{"id":1, "name":"\u041f\u0438\u0446\u0446\u0430", "img":"", "description":"\u041f\u0438\u0446\u0446\u0430 \u043d\u0430\u0448\u0435\u0439 \u043f\u0435\u043a\u0430\u0440\u043d\u0438", "activ":1},
+ {"id":2, "name":"\u0420\u043e\u043b\u044b", "img":"", "description":"\u041d\u0430\u0448\u0438 \u0440\u043e\u043b\u044b", "activ":1},
+ {"id":3, "name":"\u041f\u0438\u0440\u043e\u0436\u043a\u0438", "img":"", "description":"", "activ":1},
+ {"id":4, "name":"\u0422\u043e\u0440\u0442\u044b", "img":"", "description":"", "activ":1},
+ {"id":5, "name":"\u041d\u0430\u043f\u0438\u0442\u043a\u0438", "img":"", "description":"", "activ":1},
+ {"id":6, "name":"\u041e\u0440\u0443\u0436\u0438\u0435", "img":"", "description":"", "activ":1},
+ {"id":7, "name":"\u0416\u0435\u043d\u0449\u0438\u043d\u044b", "img":"", "description":"", "activ":1}]

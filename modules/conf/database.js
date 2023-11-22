@@ -6,6 +6,7 @@ class DataBase {
             host: 'localhost',
             user: 'root',
             password: 'root',
+            //createDatabaseTable: true,// для сессий, чтобы создавалась таблица
             //database: 'main'
         }
         this.dbName = 'main';
@@ -81,13 +82,19 @@ class DataBase {
                 //***********    Таблица Users  пользователи    */
                 this.dbConnect.query(`CREATE TABLE IF NOT EXISTS users (
                 id int AUTO_INCREMENT PRIMARY KEY, 
-                name varchar(100) DEFAULT NULL, 
+                name varchar(100) DEFAULT NULL UNIQUE KEY, 
                 passw varchar(100) DEFAULT NULL,
-                phone varchar(15) DEFAULT NULL, 
+                phone varchar(15) DEFAULT NULL UNIQUE KEY, 
                 email varchar(100) DEFAULT NULL, 
                 addres varchar(500) DEFAULT NULL, 
-                activ tinyint DEFAULT NULL) 
-                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
+                activ tinyint DEFAULT NULL,
+                isRoot tinyint DEFAULT NULL,
+                isAdmin tinyint DEFAULT NULL,
+                isCoock tinyint DEFAULT NULL,
+                salt varchar(45) DEFAULT NULL,
+                UNIQUE KEY phone_UNIQUE (phone),
+                UNIQUE KEY name_UNIQUE (name)) 
+                ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, res) {
                     if (err) {
                         console.log('Ошибка сервера');
                         reject(err);
@@ -105,7 +112,9 @@ class DataBase {
         new Promise((resolve, reject) => {
             this.dbConnect = mysql.createConnection(this.baseInfo);
             this.dbConnect.query(`CREATE DATABASE ${this.dbName} /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */`, function (err, res) {
-                if (err && err.errno === 1007) console.log('База найдена');
+                if (err)
+                    console.log(err);
+                else if (err && err.errno === 1007) console.log('База найдена');
                 else console.log('База создана');
                 resolve();
             });
@@ -134,7 +143,7 @@ class DataBase {
 
     addRoot() {
         return new Promise((resolve, reject) => {
-            this.dbConnect.query(`INSERT INTO admin(id, name, passw, activ) VALUES(1, 'root', 'nikvlad', 1)`, (err, res) => {
+            this.dbConnect.query(`INSERT INTO users(id, name, passw, activ, isRoot, isAdmin, isCoock) VALUES(1, 'root', 'nikvlad', 1, 1, 1, 1)`, (err, res) => {
                 resolve();
             });
         })

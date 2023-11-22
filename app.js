@@ -1,21 +1,40 @@
-const DataBase = require('./modules/conf/database');
+const DataBase = require('./modules/conf/database');// класс взаимодействия с базой MySQL
 const express = require('express');
+const session = require("express-session");
+const MySQLStore = require('express-mysql-session')(session);
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+var crypto = require("crypto");
 const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
 const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 const db = new DataBase;
+db.connectDb();
+const sessionStore = new MySQLStore({ createDatabaseTable: true }, db.dbConnect);
+
 const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', './views');
 
 app.use(express.static('public'));
-
-db.connectDb();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+    session({
+        secret: 'cookie_secret',
+        resave: true,
+        saveUninitialized: true,
+        store: sessionStore,
+        cookie: {
+            maxAge: 1000000
+        }
+    })
+);
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
@@ -52,7 +71,7 @@ app.use("/mysql", function (request, response) { // запросы к базе
 });
 
 app.post('/login/password', function (request, response) {
-    console.log(cart);
+    console.log();
 })
 
 
