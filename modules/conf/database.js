@@ -83,7 +83,7 @@ class DataBase {
                 this.dbConnect.query(`CREATE TABLE IF NOT EXISTS users (
                 id int AUTO_INCREMENT PRIMARY KEY, 
                 name varchar(100) DEFAULT NULL UNIQUE KEY, 
-                passw varchar(100) DEFAULT NULL,
+                passw varchar(128) DEFAULT NULL,
                 phone varchar(15) DEFAULT NULL UNIQUE KEY, 
                 email varchar(100) DEFAULT NULL, 
                 addres varchar(500) DEFAULT NULL, 
@@ -112,10 +112,11 @@ class DataBase {
         new Promise((resolve, reject) => {
             this.dbConnect = mysql.createConnection(this.baseInfo);
             this.dbConnect.query(`CREATE DATABASE ${this.dbName} /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */`, function (err, res) {
-                if (err)
-                    console.log(err);
-                else if (err && err.errno === 1007) console.log('База найдена');
-                else console.log('База создана');
+                //if (err)
+                //    console.log(err);
+                //else
+                if (err && err.errno === 1007) console.log('База найдена');
+                else if (!err) console.log('База создана');
                 resolve();
             });
         }).then((res) => {
@@ -186,7 +187,6 @@ class DataBase {
         });
     }
 
-
     getGoodId(id) {
         return new Promise((resolve, reject) => {
             this.dbConnect.query("SELECT * FROM goods WHERE (id=" + id + ")", (err, res) => {
@@ -197,7 +197,29 @@ class DataBase {
                 resolve(res);
             });
         });
+    }
 
+    getUserName(name) {
+        return new Promise((resolve, reject) => {
+            let sql = "SELECT * FROM users WHERE (name='" + name + "')";
+            this.dbConnect.query(sql, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                resolve(res[0]);
+            });
+        });
+    }
+
+    addUser(user) {
+        return new Promise((resolve, reject) => {
+            this.dbConnect.query(`INSERT INTO users(name, passw, activ, phone, email, addres, salt) VALUES('${user.name}', '${user.passw}', 1, '${user.phone}', '${user.email}', '${user.addres}', '${user.salt}')`, (err, res) => {
+                //console.log(res);
+                if (err) console.log(err);
+                resolve(res);
+            });
+        })
     }
 
 }

@@ -9,7 +9,7 @@ section.promo
 				div.action
 					h3(class="name-goods" id="name-goods")
 			div.col-4
-				div(id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel")
+				div(id="carouselExampleSlidesOnly" class="carousel slide d-flex justify-content-center" data-bs-ride="carousel")
 					div(class="carousel-inner" id="carousel-inner")
 						-var i=0;
 						each goods in stock
@@ -23,7 +23,7 @@ section.promo
 									a(href="#" class="open-card")
 										img(src=goods.img alt=goods.name class="d-block w-100" data-id=goods.id data-name=goods.name data-cost=goods.cost)
 			div.col-4
-				div(class="cart-order d-flex flex-column justify-content-between")
+				a(class="cart-order d-flex flex-column justify-content-between" href="/order")
 					h2(class="card-title") Ваша корзина
 					div(class="align-items-center")
 						img(src="/img/cart.svg" alt="" style="width: 50%")

@@ -1,0 +1,44 @@
+include header
+div(class="popup-login")
+	div(class="popup-login-header")
+		ul(class="nav nav-tabs" id="loginTab" role="tablist")
+			li(class="nav-item" role="presentation")
+				button(class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-tab-pane" type="button" role="tab" aria-controls="login-tab-pane" aria-selected="true") Вход
+			li(class="nav-item" role="presentation")
+				button(class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-tab-pane" type="button" role="tab" aria-controls="register-tab-pane" aria-selected="false") Регистрация
+	hr
+	div(class="tab-content" id="loginTabContent")
+		if message != ''
+			h1 #{message}
+		div(class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab" tabindex="0")
+			form(action="/login" method="post")
+				section
+					label(for="username") Имя:
+					input(id="username-login" name="username" type="text" autocomplete="on" required autofocus)
+				section
+					label(for="current-phone") Телефон:
+					input(id="current-phone-login" name="phone" type="tel" autocomplete="on" required)
+				section
+					label(for="current-password") Пароль:
+					input(id="current-password-login" name="password" type="password" required)
+				button(type="submit") Войти
+		div(class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
+			form(action="/signup" method="post")
+				section
+					label(for="username") Имя:
+					input(id="username" name="username" type="text" autocomplete="on" required autofocus)
+				section
+					label(for="current-phone") Телефон:
+					input(id="current-phone" name="phone" type="tel" autocomplete="on" required)
+				section
+					label(for="current-phone") Адрес:
+					input(id="current-addres" name="addres" type="text" autocomplete="on" required)
+				section
+					label(for="current-phone") email:
+					input(id="current-email" name="email" type="email" autocomplete="on")
+				section
+					label(for="current-password") Пароль:
+					input(id="current-password" name="password" type="password" autocomplete="current-password" required)
+				button(type="submit") Зарегистрироваться
+	a(href="/")
+		img(src="/img/close.svg" class="close-popup")

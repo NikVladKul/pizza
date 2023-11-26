@@ -16,10 +16,15 @@ header {
   justify-content: center;
   align-items: center;
   display: flex;
+  font-size: 30px;
 }
 
 .logo img {
   width: 90px;
+}
+
+.login a {
+  margin-left: 15px;
 }
 
 .promo h1 {
@@ -31,6 +36,11 @@ section.promo {
   background-size: cover;
   color: #eee;
   text-align: center;
+}
+
+section.promo a {
+  color: #eee;
+  text-decoration: none;
 }
 
 div.promo {
@@ -115,8 +125,7 @@ nav.nav {
   transition: 0.5s all;
 }
 
-.popup-good,
-.popup-login {
+.popup-good {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -124,6 +133,19 @@ nav.nav {
   background-color: beige;
   min-width: 400px;
   transition: 0.5s all;
+}
+
+.popup-login {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: beige;
+  min-width: 400px;
+}
+
+.popup-login h1 {
+  color: red;
 }
 
 .popup-login-header .nav {
@@ -152,8 +174,7 @@ nav.nav {
   float: left;
 }
 
-.popup-good.active,
-.popup-login.active {
+.popup-good.active {
   transform: translate(-50%, -50%) scale(1);
   transition: 0.5s all;
 }
