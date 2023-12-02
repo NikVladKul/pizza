@@ -21,11 +21,24 @@ function getGoodInCat(event) { // запрос: все продукты из в�
     .then((result) => result.json()).then((body) => {
       let container = document.getElementById("content");
       container.textContent = "";
-
-      const range = new Range()
-      let strCard = "";
-      for (let i = 0; i < body.length; i++) {
+      if (body.length === 0) {
+        const range = new Range()
+        let strCard = "";
         strCard = `
+        <div class="col-12">
+          <div class="card text-center h-100">
+            <div class="card-body">
+              <h2>Здесь пока ничего нет, но скоро появится.</h2>
+              <h3>Заходите к нам по чаще.</h3>
+            </div>
+          </div>`;
+        let elemCard = range.createContextualFragment(strCard);
+        container.append(elemCard);
+      } else {
+        const range = new Range()
+        let strCard = "";
+        for (let i = 0; i < body.length; i++) {
+          strCard = `
         <div class="col-sm-6 col-md-4">
           <div class="card text-center h-100">
             <div class="card-body d-flex flex-column justify-content-between">
@@ -39,8 +52,9 @@ function getGoodInCat(event) { // запрос: все продукты из в�
               <button class="btn btn-primary" data-id=${body[i].id}>В корзину</button>
             </div>
           </div>`;
-        let elemCard = range.createContextualFragment(strCard);
-        container.append(elemCard);
+          let elemCard = range.createContextualFragment(strCard);
+          container.append(elemCard);
+        }
       }
     });
 }

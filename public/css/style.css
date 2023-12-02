@@ -25,6 +25,12 @@ header {
 
 .login a {
   margin-left: 15px;
+  text-decoration: none;
+  color: #eee;
+}
+
+.login p {
+  display: inline;
 }
 
 .promo h1 {
@@ -133,6 +139,16 @@ nav.nav {
   background-color: beige;
   min-width: 400px;
   transition: 0.5s all;
+}
+
+.popup-login .tab-content,
+button {
+  width: 100%;
+  font-size: 25px;
+}
+
+.popup-login input {
+  width: 70%;
 }
 
 .popup-login {

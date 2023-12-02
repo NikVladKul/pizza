@@ -28,6 +28,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+//app.use(express.bodyParser());
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -46,6 +47,14 @@ require('./modules/conf/passport');
 //app.use(passport.initialize());
 //app.use(passport.session());
 app.use(passport.authenticate('session'));
+
+app.post('/login', (req, res, next) => {
+    if (req.session.messages) {
+        req.session.messages = [];
+    }
+    next();
+})
+
 app.use('/', routers);
 
 app.use(function (err, req, res, next) {

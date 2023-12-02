@@ -1,4 +1,5 @@
 let cart = {}; // Корзина
+let logout = document.querySelector('.logout'); // Ссылка выход
 let cartOrder = document.querySelector('.cart-order'); // Оформление корзины
 let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
 let popupGood = document.querySelector('.popup-good'); // Само окно попап
@@ -10,6 +11,36 @@ content.addEventListener('click', function (event) { getGoodId(event) }); // о�
 carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
 popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
 
+//*****************************************LOCALSTORAGE  */
+
+function updateStorageCart() { // Обновляем корзину
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+if (logout) {
+  logout.addEventListener('click', ajaxGetLogout);
+  if (localStorage.getItem('cart')) { //Если что-то осталось в корзине, загружаем
+    cart = JSON.parse(localStorage.getItem('cart'));
+    getGoodId();
+    //ajaxGetProductsInfo();
+  }
+}
+
+function ajaxGetLogout() {
+  fetch('/logout', {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    }
+  })
+    .then(function (response) {
+      if (response) console.log(response);
+      cart = {};
+      cartOrder.classList.remove('active');
+    });
+}
+
 cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
   console.log(cart);
   //popupBg.classList.add('active'); // Добавляем класс 'active' для фона
@@ -17,22 +48,25 @@ cartOrder.addEventListener('click', function (event) { // обработчик �
 });
 
 function getGoodId(event) {
-  event.preventDefault();
-  if ((event.target.tagName === "IMG") && ((event.currentTarget === content) || (event.currentTarget === carousel))) { // Если клик по картинке открываем попап
-    let url = "/mysql?good_id=" + event.target.dataset.id;
-    fetch(url).then((result) => result.json()).then((body) => fillPopupGood(body[0]));
+  if (event) {
+    event.preventDefault();
+    if ((event.target.tagName === "IMG") && ((event.currentTarget === content) || (event.currentTarget === carousel))) { // Если клик по картинке открываем попап
+      let url = "/mysql?good_id=" + event.target.dataset.id;
+      fetch(url).then((result) => result.json()).then((body) => fillPopupGood(body[0]));
 
-    popupBg.classList.add('active'); // Добавляем класс 'active' для фона
-    popupGood.classList.add('active');
-  } else if (event.target.tagName === "BUTTON") { // Если клик по кнопке добавляем в корзину
-    if ("id" + event.target.dataset.id in cart) {
-      cart["id" + event.target.dataset.id] += 1;
-    } else {
-      cart["id" + event.target.dataset.id] = 1;
+      popupBg.classList.add('active'); // Добавляем класс 'active' для фона
+      popupGood.classList.add('active');
+    } else if (event.target.tagName === "BUTTON") { // Если клик по кнопке добавляем в корзину
+      if ("id" + event.target.dataset.id in cart) {
+        cart["id" + event.target.dataset.id] += 1;
+      } else {
+        cart["id" + event.target.dataset.id] = 1;
+      }
     }
   }
   if (Object.keys(cart).length !== 0) {
     cartOrder.classList.add('active');
+    updateStorageCart();
   }
 }
 

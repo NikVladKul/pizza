@@ -1,4 +1,6 @@
 const mysql = require('mysql2');
+const genPassword = require('../lib/crypto').genPassword;
+
 
 class DataBase {
     constructor() {
@@ -82,9 +84,9 @@ class DataBase {
                 //***********    Таблица Users  пользователи    */
                 this.dbConnect.query(`CREATE TABLE IF NOT EXISTS users (
                 id int AUTO_INCREMENT PRIMARY KEY, 
-                name varchar(100) DEFAULT NULL UNIQUE KEY, 
+                name varchar(100) DEFAULT NULL, 
                 passw varchar(128) DEFAULT NULL,
-                phone varchar(15) DEFAULT NULL UNIQUE KEY, 
+                phone varchar(17) DEFAULT NULL UNIQUE KEY, 
                 email varchar(100) DEFAULT NULL, 
                 addres varchar(500) DEFAULT NULL, 
                 activ tinyint DEFAULT NULL,
@@ -104,7 +106,21 @@ class DataBase {
                         resolve();
                     }
                 });
-            })
+            }),
+            //new Promise((resolve, reject) => {
+            //    //***********    Таблица Users  пользователи    */
+            //    this.dbConnect.query(`CREATE INDEX IF NOT EXISTS phone_index ON users (phone) USING BTREE`, function (err, res) {
+            //        if (err) {
+            //            console.log('Ошибка сервера');
+            //            reject(err);
+            //        } else {
+            //            if (res.warningStatus === 1) console.log('Таблица users найдена');
+            //            else console.log('Таблица users создана');
+            //            resolve();
+            //        }
+            //    });
+            //})
+
         ]);
     }
 
@@ -143,8 +159,9 @@ class DataBase {
     }
 
     addRoot() {
+        let saltHash = genPassword(process.env.ROOT_CODE);
         return new Promise((resolve, reject) => {
-            this.dbConnect.query(`INSERT INTO users(id, name, passw, activ, isRoot, isAdmin, isCoock) VALUES(1, 'root', 'nikvlad', 1, 1, 1, 1)`, (err, res) => {
+            this.dbConnect.query(`INSERT INTO users(id, name, passw, phone, activ, isRoot, isAdmin, isCoock, salt) VALUES(1, 'root', '${saltHash.hash}', '+7 (999) 555 4455', 1, 1, 1, 1, '${saltHash.salt}')`, (err, res) => {
                 resolve();
             });
         })
@@ -199,9 +216,22 @@ class DataBase {
         });
     }
 
-    getUserName(name) {
+    //getUserName(name) {
+    //    return new Promise((resolve, reject) => {
+    //        let sql = "SELECT * FROM users WHERE (name='" + name + "')";
+    //        this.dbConnect.query(sql, (err, res) => {
+    //            if (err) {
+    //                console.log(err);
+    //                reject(err);
+    //            }
+    //            resolve(res[0]);
+    //        });
+    //    });
+    //}
+
+    getUserPhone(phone) {
         return new Promise((resolve, reject) => {
-            let sql = "SELECT * FROM users WHERE (name='" + name + "')";
+            let sql = "SELECT * FROM users WHERE (phone='" + phone + "')";
             this.dbConnect.query(sql, (err, res) => {
                 if (err) {
                     console.log(err);
@@ -211,6 +241,21 @@ class DataBase {
             });
         });
     }
+
+    isUserPhone(phone) {
+        return new Promise((resolve, reject) => {
+            let sql = "SELECT EXISTS(SELECT * FROM users WHERE phone = '" + phone + "')";
+            this.dbConnect.query(sql, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                let vals = Object.values(res[0]);
+                resolve(vals[0]);
+            });
+        });
+    }
+
 
     addUser(user) {
         return new Promise((resolve, reject) => {

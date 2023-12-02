@@ -21,9 +21,9 @@ html(lang="ru")
 					div(class="login col-2")
 						if user
 							p #{user}
-							a(href="/logout")
+							a(href="/logout" class="logout")
 								img(src="/img/logout.svg" alt="logout")
 						else
-							p Вход
-							a(href="/login") 
+							a(href="/login")
+								p Вход 
 								img(src="/img/login.svg" alt="login")

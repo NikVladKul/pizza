@@ -2,18 +2,20 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const validPassword = require('../lib/crypto').validPassword;
 
-passport.use(new LocalStrategy((username, password, cb) => {
+passport.use('local', new LocalStrategy({ usernameField: 'phone' }, (username, password, cb) => {
   const db = require('../../app');
+  //console.log('local strategy');
 
-  db.getUserName(username)
+  db.getUserPhone(username)
     .then((user) => {
-      if (!user) { return cb(null, false); }
+      if (!user) return cb(null, false, { message: '!Phone' });
+
       const isValid = validPassword(password, user.passw, user.salt);
 
       if (isValid) {
         return cb(null, user);
       } else {
-        return cb(null, false);
+        return cb(null, false, { message: '!Password' });
       }
     })
     .catch((err) => {
@@ -33,3 +35,5 @@ passport.deserializeUser(function (user, cb) {
     return cb(null, user);
   });
 });
+
+module.exports.passport = passport;

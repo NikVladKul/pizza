@@ -1,10 +1,9 @@
-const express = require('express');
 const router = require('express').Router();
 const passport = require('passport');
 const isAuth = require('./auth').isAuth;
-//const isAuth = require('./auth').isAuth;
-let fork = { successRedirect: '/', failureRedirect: '/login-error' };
+const genPassword = require('../modules/lib/crypto').genPassword;
 
+let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
 
 // *************************** GET запросы ****************************
 
@@ -47,31 +46,33 @@ router.get('/login', function (req, res, next) { // вход
   res.render('login'); //       render('index');
 });
 
-router.get('/logout', function (req, res, next) { // вход
+router.get('/logout', function (req, res, next) { // выход
   req.logout(function (err) {
     if (err) { return next(err); }
+    req.session.destroy();
     res.redirect('/');
   });
 });
 
-router.get('/login-fail', function (req, res, next) { // вход
+router.get('/login-fail', function (req, res, next) { // вход при попытке что-то сделать будуче не авторизованным
   fork.successRedirect = '/order';
-  res.render('login', { "message": 'Вы не авторизованы!' }); //       render('index');
+  res.render('login', { "message": 'Вы не авторизованы!' });
 });
 
-router.get('/login-error', function (req, res, next) { // вход
-  fork.successRedirect = '/order';
-  res.render('login', { "message": 'Ошибка авторизации!' }); //       render('index');
+router.get('/login-error', function (req, res, next) { // вход при ошибке авторизации
+  let msg = {};
+  if (req.session.messages[0] === '!Phone') {
+    msg = { "message": 'Номер не зарегистрирован!' }
+  }
+  if (req.session.messages[0] === '!Password') {
+    msg = { "message": 'Не верный пароль!' }
+  }
+  res.render('login', msg);
 });
 
 // ***************************** POST запросы **************************************
 
-router.post('/login', passport.authenticate('local', fork
-  //{
-  //successRedirect: '/order',
-  //failureRedirect: '/login'
-  //}
-));
+router.post('/login', passport.authenticate('local', fork));
 
 router.post('/logout', function (req, res, next) {
   req.logout(function (err) {
@@ -81,23 +82,35 @@ router.post('/logout', function (req, res, next) {
 });
 
 router.post('/signup', function (req, res, next) {
-  const saltHash = genPassword(req.body.password);
+  const db = require('../app');
 
-  console.log(req.body);
+  db.isUserPhone(req.body.phone).then((result) => {
+    if (result) {
+      res.render('login', { "message": 'Вы уже зарегистрированы!' });// Пользователь с таким телефоном есть!
+    } else {
+      const saltHash = genPassword(req.body.password);
+      db.addUser({
+        salt: saltHash.salt,
+        passw: saltHash.hash,
+        name: req.body.username,
+        phone: req.body.phone,
+        email: req.body.email,
+        addres: req.body.addres
+      }).then(res.redirect(fork.successRedirect));
+    }
+  });
 
-  const salt = saltHash.salt;
-  const hash = saltHash.hash;
+  //const saltHash = genPassword(req.body.password);
+  //db.addUser({
+  //  salt: saltHash.salt,
+  //  passw: saltHash.hash,
+  //  name: req.body.username,
+  //  phone: req.body.phone,
+  //  email: req.body.email,
+  //  addres: req.body.addres
+  //}).then(res.redirect(fork.successRedirect));
 
-  db.addUser({
-    salt: salt,
-    passw: hash,
-    name: req.body.username,
-    phone: req.body.phone,
-    email: req.body.email,
-    addres: req.body.addres
-  }).then();
 
-  res.redirect("/");
 });
 
 // ***************************** MySQL запросы **************************************
