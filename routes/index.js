@@ -2,6 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const isAuth = require('./auth').isAuth;
 const genPassword = require('../modules/lib/crypto').genPassword;
+const clientWhatsapp = require('../modules/conf/whatsapp').clientWhatsapp;
 
 let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
 
@@ -41,6 +42,14 @@ router.get('/order', isAuth, (request, response) => { // оформление з
 router.get('/signup', function (req, res, next) { // регистрация
   res.render('index');
 });
+
+router.get('/sendcode', function (request, response) {
+  const number = request.headers.number.replace(/[\+\(\) ]/g, ""); //    '+7 (222) 222 2222'
+  let code = randomCode();
+  console.log(number, " ", code);
+  sendToNumber(number + "@c.us", code);
+  response.send({ res: true });
+})
 
 router.get('/login', function (req, res, next) { // вход
   res.render('login'); //       render('index');
@@ -88,6 +97,7 @@ router.post('/signup', function (req, res, next) {
     if (result) {
       res.render('login', { "message": 'Вы уже зарегистрированы!' });// Пользователь с таким телефоном есть!
     } else {
+
       const saltHash = genPassword(req.body.password);
       db.addUser({
         salt: saltHash.salt,
@@ -100,15 +110,8 @@ router.post('/signup', function (req, res, next) {
     }
   });
 
-  //const saltHash = genPassword(req.body.password);
-  //db.addUser({
-  //  salt: saltHash.salt,
-  //  passw: saltHash.hash,
-  //  name: req.body.username,
-  //  phone: req.body.phone,
-  //  email: req.body.email,
-  //  addres: req.body.addres
-  //}).then(res.redirect(fork.successRedirect));
+  // ***************************** Whatsapp запросы **************************************
+
 
 
 });
@@ -127,5 +130,25 @@ router.use("/mysql", function (request, response) { // запросы к баз�
   }
 });
 
+async function sendToNumber(number, message) {
+  await clientWhatsapp.isRegisteredUser(number).then(function (isRegistered) {
+    console.log(isRegistered);
+    if (isRegistered) {
+      clientWhatsapp.sendMessage(number, message);
+    } else {
+      console.log('Not registered');
+    }
+  }).catch(err => console.log('Не верный номер'));
+}
+
+function randomCode(length = 4) {
+  var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  var result = ""; // Единое переименование: alt + shift + r
+  for (var i = 0; i < length; i++) {
+    var index = Math.ceil(Math.random() * 9);
+    result += chars[index];
+  }
+  return result;
+}
 
 module.exports = router;

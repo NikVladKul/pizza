@@ -1,4 +1,21 @@
+const getCode = document.getElementById("get-code");
+const currentPhone = document.getElementById("current-phone");
+getCode.addEventListener('click', ajaxSendCode);
+
+function ajaxSendCode() {
+  fetch('/sendcode', {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'number': currentPhone.value
+    }
+  }).then((response) => response.json()
+  ).then(result => console.log(result));
+}
+
 function mask(event) {
+  let keyCode = "";
   event.keyCode && (keyCode = event.keyCode);
   var pos = this.selectionStart;
   if (pos < 3) event.preventDefault();

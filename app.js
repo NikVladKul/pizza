@@ -2,13 +2,14 @@ const DataBase = require('./modules/conf/database');// класс взаимод
 const express = require('express');
 const session = require("express-session");
 const cookieParser = require('cookie-parser');
+//const requestListener = require('./modules/conf/whatsapp');
 const MySQLStore = require('express-mysql-session')(session);
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-var crypto = require("crypto");
+//const LocalStrategy = require("passport-local").Strategy;
+//var crypto = require("crypto");
 const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
 const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
@@ -48,14 +49,9 @@ require('./modules/conf/passport');
 //app.use(passport.session());
 app.use(passport.authenticate('session'));
 
-app.post('/login', (req, res, next) => {
-    if (req.session.messages) {
-        req.session.messages = [];
-    }
-    next();
-})
-
 app.use('/', routers);
+
+//app.use(requestListener);
 
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development

@@ -20,18 +20,19 @@ class DataBase {
         return Promise.all([
             new Promise((resolve, reject) => {
                 //***********    Таблица Admin     */
-                this.dbConnect.query(`CREATE TABLE IF NOT EXISTS admin (
-                    id int AUTO_INCREMENT PRIMARY KEY, 
-                    name varchar(45) DEFAULT NULL, 
-                    passw varchar(100) DEFAULT NULL,
-                    activ tinyint DEFAULT NULL) 
+                this.dbConnect.query(`CREATE TABLE IF NOT EXISTS wsp_sessions (
+                    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+                    session_name varchar(255) NOT NULL, 
+                    data mediumblob,
+                    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP(),
+                    updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP()) 
                     ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
                     if (err) {
                         console.log('Ошибка сервера');
                         reject(err);
                     } else {
-                        if (res.warningStatus === 1) console.log('Таблица admin найдена');
-                        else console.log('Таблица admin создана');
+                        if (res.warningStatus === 1) console.log('Таблица Whatsaap найдена');
+                        else console.log('Таблица Whatsaap создана');
                         resolve();
                     }
                 });
