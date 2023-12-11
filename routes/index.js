@@ -3,6 +3,9 @@ const passport = require('passport');
 const isAuth = require('./auth').isAuth;
 const genPassword = require('../modules/lib/crypto').genPassword;
 const clientWhatsapp = require('../modules/conf/whatsapp').clientWhatsapp;
+const multer = require('multer');
+const upload = multer();
+let user = { phone: "", code: "" };
 
 let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
 
@@ -43,13 +46,28 @@ router.get('/signup', function (req, res, next) { // регистрация
   res.render('index');
 });
 
-router.get('/sendcode', function (request, response) {
+router.get('/sendcode', async function (request, response) {
+  user.phone = request.headers.number;
   const number = request.headers.number.replace(/[\+\(\) ]/g, ""); //    '+7 (222) 222 2222'
   let code = randomCode();
-  console.log(number, " ", code);
-  sendToNumber(number + "@c.us", code);
-  response.send({ res: true });
-})
+  user.code = code;
+  console.log(number, code);
+  let resSend = {};
+  try {
+    //let res = await sendToNumber(number + "@c.us", code);
+    //console.log(res);
+    if (await sendToNumber(number + "@c.us", code)) {
+      resSend = { res: true };
+    } else {
+      resSend = { res: false };
+    }
+  } catch (err) {
+    console.log(err);
+    resSend = { res: false };
+  }
+  response.send(resSend);
+});
+
 
 router.get('/login', function (req, res, next) { // вход
   res.render('login'); //       render('index');
@@ -90,25 +108,32 @@ router.post('/logout', function (req, res, next) {
   });
 });
 
-router.post('/signup', function (req, res, next) {
+router.post('/signup', upload.none(), function (req, res, next) {
   const db = require('../app');
+  //console.log("user: ", user.phone);
+  //console.log("form: ", req.body.phone);
+  //console.log("user: ", user.code);
+  //console.log("form: ", req.body.code);
+  if ((req.body.phone === user.phone) && (req.body.code === user.code)) {
 
-  db.isUserPhone(req.body.phone).then((result) => {
-    if (result) {
-      res.render('login', { "message": 'Вы уже зарегистрированы!' });// Пользователь с таким телефоном есть!
-    } else {
+    db.isUserPhone(req.body.phone).then((result) => {
+      if (result) {
+        res.send({ "result": false, "message": 'Вы уже зарегистрированы!' });// Пользователь с таким телефоном есть!
+      } else {
 
-      const saltHash = genPassword(req.body.password);
-      db.addUser({
-        salt: saltHash.salt,
-        passw: saltHash.hash,
-        name: req.body.username,
-        phone: req.body.phone,
-        email: req.body.email,
-        addres: req.body.addres
-      }).then(res.redirect(fork.successRedirect));
-    }
-  });
+        const saltHash = genPassword(req.body.password);
+        db.addUser({
+          salt: saltHash.salt,
+          passw: saltHash.hash,
+          name: req.body.username,
+          phone: req.body.phone,
+          email: req.body.email,
+          addres: req.body.addres
+        }).then(res.redirect(fork.successRedirect));
+      }
+    });
+  } else if (!(req.body.phone === user.phone)) res.send({ "result": false, "message": 'Не верный номер' });
+  else if (!(req.body.code === user.code)) res.send({ "result": false, "message": 'Не верный код' });
 
   // ***************************** Whatsapp запросы **************************************
 
@@ -131,19 +156,19 @@ router.use("/mysql", function (request, response) { // запросы к баз�
 });
 
 async function sendToNumber(number, message) {
-  await clientWhatsapp.isRegisteredUser(number).then(function (isRegistered) {
-    console.log(isRegistered);
-    if (isRegistered) {
-      clientWhatsapp.sendMessage(number, message);
-    } else {
-      console.log('Not registered');
-    }
-  }).catch(err => console.log('Не верный номер'));
+  let isRegistered = await clientWhatsapp.isRegisteredUser(number);
+  console.log(isRegistered);
+  if (isRegistered) {
+    return clientWhatsapp.sendMessage(number, message);
+  } else {
+    console.log('Not registered');
+    return false;
+  }
 }
 
 function randomCode(length = 4) {
   var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  var result = ""; // Единое переименование: alt + shift + r
+  var result = "";
   for (var i = 0; i < length; i++) {
     var index = Math.ceil(Math.random() * 9);
     result += chars[index];

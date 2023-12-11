@@ -24,7 +24,7 @@ div(class="popup-login")
 				button(type="submit" class="btn btn-primary") Войти
 		div(class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
 			h3 Телефон должен быть подключен к WhatsApp
-			form(action="/signup" method="post")
+			form(action="/signup" method="post" id="signupForm" enctype="multipart/form-data")
 				section
 					label(for="username") Имя:
 					input(id="username" name="username" type="text" autocomplete="on" required autofocus)
@@ -32,6 +32,10 @@ div(class="popup-login")
 					label(for="current-phone") Телефон:
 					input(class="tel" id="current-phone" name="phone" type="tel" autocomplete="on" required)
 					button(id="get-code" class="btn btn-primary" type="button") Получить код
+						p(id="timer")
+				section(id="code")
+					label(for="input-code") Код проверки:
+					input(id="input-code" name="code" type="text" required)
 				section
 					label(for="current-phone") Адрес:
 					input(id="current-addres" name="addres" type="text" autocomplete="on" required)

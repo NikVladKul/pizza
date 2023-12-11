@@ -4,3 +4,5 @@ tmp/
 /gitpwd.txt
 .env
 #/.gitignore
+.wwebjs_auth/
+.wwebjs_cache/
