@@ -1,11 +1,9 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const validPassword = require('../lib/crypto').validPassword;
+const db = require('./dbmysql').db;
 
 passport.use('local', new LocalStrategy({ usernameField: 'phone' }, (username, password, cb) => {
-  const db = require('../../app');
-  //console.log('local strategy');
-
   db.getUserPhone(username)
     .then((user) => {
       if (!user) return cb(null, false, { message: '!Phone' });

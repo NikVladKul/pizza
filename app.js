@@ -1,4 +1,4 @@
-const DataBase = require('./modules/conf/database');// класс взаимодействия с базой MySQL
+//const DataBase = require('./modules/conf/database');// класс взаимодействия с базой MySQL   **********************
 const express = require('express');
 const session = require("express-session");
 const cookieParser = require('cookie-parser');
@@ -8,17 +8,15 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const passport = require("passport");
-//const LocalStrategy = require("passport-local").Strategy;
-//var crypto = require("crypto");
 const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
 const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 require('dotenv').config();
 const routers = require('./routes');
 
-const db = new DataBase;
-db.connectDb();
-const sessionStore = new MySQLStore({ createDatabaseTable: true }, db.dbConnect);
+const pool = require('./modules/conf/dbmysql').pool;
+
+const sessionStore = new MySQLStore({ createDatabaseTable: true }, pool);
 
 const app = express();
 
@@ -29,7 +27,6 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-//app.use(express.bodyParser());
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -45,13 +42,9 @@ app.use(
 
 require('./modules/conf/passport');
 
-//app.use(passport.initialize());
-//app.use(passport.session());
 app.use(passport.authenticate('session'));
 
 app.use('/', routers);
-
-//app.use(requestListener);
 
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
@@ -73,7 +66,7 @@ httpServer.listen(process.env.PORT_HTTP, process.env.HOST, () => { console.log(`
 httpsServer.listen(process.env.PORT_HTTPS, process.env.HOST, () => { console.log(`HTTPS слушает ${process.env.PORT_HTTPS}`) });
 
 //app.listen(8000);
-module.exports = db;
+//module.exports = db;
 
 
 

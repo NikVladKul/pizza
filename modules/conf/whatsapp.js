@@ -2,6 +2,7 @@ const { Client, RemoteAuth } = require('whatsapp-web.js');
 const { MysqlStore } = require('wwebjs-mysql');
 const mysql = require('mysql2/promise');
 const qrcode = require('qrcode-terminal');
+//const db = require('./dbmysql').db;
 //const db = require('../../app');
 require('dotenv').config();
 

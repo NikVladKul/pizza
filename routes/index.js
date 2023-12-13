@@ -5,6 +5,8 @@ const genPassword = require('../modules/lib/crypto').genPassword;
 const clientWhatsapp = require('../modules/conf/whatsapp').clientWhatsapp;
 const multer = require('multer');
 const upload = multer();
+const db = require('../modules/conf/dbmysql').db;
+
 let user = { phone: "", code: "" };
 
 let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
@@ -13,7 +15,7 @@ let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessa
 
 router.get('/', (request, response) => { // стартовая страница
   fork.successRedirect = '/';
-  const db = require('../app');
+
   let category;
   let goods;
   db.getAllCategory()
@@ -54,8 +56,6 @@ router.get('/sendcode', async function (request, response) {
   console.log(number, code);
   let resSend = {};
   try {
-    //let res = await sendToNumber(number + "@c.us", code);
-    //console.log(res);
     if (await sendToNumber(number + "@c.us", code)) {
       resSend = { res: true };
     } else {
@@ -109,11 +109,6 @@ router.post('/logout', function (req, res, next) {
 });
 
 router.post('/signup', upload.none(), function (req, res, next) {
-  const db = require('../app');
-  //console.log("user: ", user.phone);
-  //console.log("form: ", req.body.phone);
-  //console.log("user: ", user.code);
-  //console.log("form: ", req.body.code);
   if ((req.body.phone === user.phone) && (req.body.code === user.code)) {
 
     db.isUserPhone(req.body.phone).then((result) => {
@@ -144,7 +139,6 @@ router.post('/signup', upload.none(), function (req, res, next) {
 // ***************************** MySQL запросы **************************************
 
 router.use("/mysql", function (request, response) { // запросы к базе
-  const db = require('../app');
   if (request.query.goods_in_cat) {
     db.getGoodsInCategory(request.query.goods_in_cat)
       .then((result) => response.json(result));
