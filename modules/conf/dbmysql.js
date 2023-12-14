@@ -1,17 +1,10 @@
 const mysql = require('mysql2');
+//const genPassword = require('../lib/crypto').genPassword;
+const createDb = require('./createdb').createDb;
 
-const pool = mysql.createPool({
-  host: process.env.DB_MYSQL_HOST,
-  user: process.env.DB_MYSQL_USER,
-  password: process.env.DB_MYSQL_PASSWORD,
-  database: process.env.DB_MYSQL_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10,  // max number of concurrent conections
-  queueLimit: 0         // max number of conections on queue (0 = limitless)
-});
+let pool = {};
 
 let db = {};
-db.connect = pool;
 
 db.getAllCategory = () => {
   return new Promise((resolve, reject) => {
@@ -23,7 +16,7 @@ db.getAllCategory = () => {
       resolve(res);
     });
   });
-}
+};
 
 db.getGoodsInCategory = (cat) => {
   return new Promise((resolve, reject) => {
@@ -35,7 +28,7 @@ db.getGoodsInCategory = (cat) => {
       resolve(res);
     });
   });
-}
+};
 
 db.getAllGoodsStock = () => {
   return new Promise((resolve, reject) => {
@@ -47,7 +40,7 @@ db.getAllGoodsStock = () => {
       resolve(res);
     });
   });
-}
+};
 
 db.getGoodId = (id) => {
   return new Promise((resolve, reject) => {
@@ -59,7 +52,7 @@ db.getGoodId = (id) => {
       resolve(res);
     });
   });
-}
+};
 
 db.getUserPhone = (phone) => {
   return new Promise((resolve, reject) => {
@@ -72,7 +65,7 @@ db.getUserPhone = (phone) => {
       resolve(res[0]);
     });
   });
-}
+};
 
 db.isUserPhone = (phone) => {
   return new Promise((resolve, reject) => {
@@ -86,7 +79,7 @@ db.isUserPhone = (phone) => {
       resolve(vals[0]);
     });
   });
-}
+};
 
 db.addUser = (user) => {
   return new Promise((resolve, reject) => {
@@ -96,7 +89,19 @@ db.addUser = (user) => {
       resolve(res);
     });
   })
-}
+};
+
+createDb().then(
+  pool = mysql.createPool({
+    host: process.env.DB_MYSQL_HOST,
+    user: process.env.DB_MYSQL_USER,
+    password: process.env.DB_MYSQL_PASSWORD,
+    database: process.env.DB_MYSQL_DATABASE,
+    waitForConnections: true,
+    connectionLimit: 10,  // max number of concurrent conections
+    queueLimit: 0         // max number of conections on queue (0 = limitless)
+  }),
+  module.exports.pool = pool
+);
 
 module.exports.db = db;
-module.exports.pool = pool;

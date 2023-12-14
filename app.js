@@ -1,8 +1,6 @@
-//const DataBase = require('./modules/conf/database');// класс взаимодействия с базой MySQL   **********************
 const express = require('express');
 const session = require("express-session");
 const cookieParser = require('cookie-parser');
-//const requestListener = require('./modules/conf/whatsapp');
 const MySQLStore = require('express-mysql-session')(session);
 const fs = require('fs');
 const http = require('http');
@@ -13,7 +11,6 @@ const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 require('dotenv').config();
 const routers = require('./routes');
-
 const pool = require('./modules/conf/dbmysql').pool;
 
 const sessionStore = new MySQLStore({ createDatabaseTable: true }, pool);

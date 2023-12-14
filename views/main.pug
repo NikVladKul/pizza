@@ -23,6 +23,7 @@ section.main
 									div(class="align-items-center")
 										a(href="#" class="open-card")
 											img(src=item.img class="card-img" data-id=item.id alt=item.name)
-										h2(class="card-text") #{item.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}руб.
+										if (item.cost)
+											h2(class="card-text") #{item.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}руб.
 									button(class="btn btn-primary" data-id=item.id) В корзину
 
