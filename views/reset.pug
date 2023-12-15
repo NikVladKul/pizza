@@ -1,0 +1,18 @@
+include header
+div(class="popup-login")
+	div(class="popup-login-header")
+		h2 Введите email для восстановления пароля
+	hr
+	div(class="content")
+		form(action="/reset" method="post" class="tab-content" id="resetForm")
+			section
+				label(for="current-email") email:
+				input(id="current-email" name="email" type="email" autocomplete="on" required)
+			button(type="submit" class="btn btn-primary") Отправить ссылку
+			hr
+	div(class="popup-login-footer")
+		hr
+		h4 Если изменился email или не верно указали при регистрации.
+		p Напишите нам <a href="#">НАШ EMAIL</a>, мы удалим ваш аккаунт и сможете заново пройти регистрацию.
+script
+	include ../public/js/reset.js

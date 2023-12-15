@@ -81,12 +81,107 @@ db.isUserPhone = (phone) => {
   });
 };
 
+db.getUserEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    let sql = "SELECT id,name FROM users WHERE email = '" + email + "'";
+    pool.query(sql, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res[0]);
+    });
+  });
+};
+
 db.addUser = (user) => {
   return new Promise((resolve, reject) => {
     pool.query(`INSERT INTO users(name, passw, activ, phone, email, addres, salt) VALUES('${user.name}', '${user.passw}', 1, '${user.phone}', '${user.email}', '${user.addres}', '${user.salt}')`, (err, res) => {
-      //console.log(res);
-      if (err) console.log(err);
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
       resolve(res);
+    });
+  })
+};
+
+//*************************************       RESET      ********************** */
+
+db.isReset = (userId) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT EXISTS(SELECT * FROM reset WHERE user_id = '" + userId + "')", (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      let vals = Object.values(res[0]);
+      resolve(vals[0]);
+    });
+  })
+};
+
+db.getReset = (token) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT user_id FROM reset WHERE token = '${token}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res[0]);
+    });
+  })
+};
+
+db.deleteReset = (userId) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`DELETE FROM reset WHERE user_id = '${userId}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res[0]);
+    });
+  })
+};
+
+db.deleteResetScheduler = (token, userId) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`CREATE EVENT ${token} ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 2 HOUR DO DELETE FROM reset WHERE user_id = ${userId}`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.updateReset = (token, userId) => {
+  return new Promise((resolve, reject) => {
+    db.isReset(userId).then((res) => {
+      if (res === 0) {
+        pool.query(`INSERT INTO reset(token, user_id) VALUES('${token}', '${userId}')`, (err, res) => {
+          if (err) {
+            console.log(err);
+            reject(err);
+          }
+          resolve(res);
+        });
+      } else {
+        pool.query(`UPDATE reset SET token = '${token}', created_at = CURRENT_TIMESTAMP WHERE user_id = '${userId}'`, (err, res) => {
+          if (err) {
+            console.log(err);
+            reject(err);
+          }
+          resolve(res);
+        });
+      };
+      db.deleteResetScheduler(token, userId);
+      resolve(res);
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
     });
   })
 };

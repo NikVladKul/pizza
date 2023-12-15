@@ -35,6 +35,27 @@ db.createTableWps = () => {
   })
 };
 
+db.createTableReset = () => {
+  return new Promise((resolve, reject) => {
+    //***********    Таблица reset      */
+    pool.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.reset (
+                    id int AUTO_INCREMENT PRIMARY KEY,
+                    token varchar(32) NOT NULL,
+                    created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                    user_id int)
+                    ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
+      if (err) {
+        console.log('Ошибка сервера', err);
+        reject(err);
+      } else {
+        if (res.warningStatus === 1) console.log('Таблица reset найдена');
+        else console.log('Таблица reset создана');
+        resolve();
+      }
+    });
+  })
+};
+
 db.createTableCategory = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Category  категории продуктов    */
@@ -86,19 +107,19 @@ db.createTableUsers = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Users  пользователи    */
     pool.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.users (
-                id int AUTO_INCREMENT PRIMARY KEY, 
-                name varchar(100) DEFAULT NULL, 
+                id int AUTO_INCREMENT PRIMARY KEY,
+                name varchar(100) DEFAULT NULL,
                 passw varchar(128) DEFAULT NULL,
-                phone varchar(17) DEFAULT NULL UNIQUE KEY, 
-                email varchar(100) DEFAULT NULL, 
-                addres varchar(500) DEFAULT NULL, 
+                phone varchar(17) DEFAULT NULL UNIQUE KEY,
+                email varchar(100) DEFAULT NULL UNIQUE KEY,
+                addres varchar(500) DEFAULT NULL,
                 activ tinyint DEFAULT NULL,
                 isRoot tinyint DEFAULT NULL,
                 isAdmin tinyint DEFAULT NULL,
                 isCoock tinyint DEFAULT NULL,
                 salt varchar(64) DEFAULT NULL,
                 UNIQUE KEY phone_UNIQUE (phone),
-                UNIQUE KEY name_UNIQUE (name)) 
+                UNIQUE KEY name_UNIQUE (name))
                 ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, res) {
       if (err) {
         console.log('Ошибка сервера');
@@ -114,7 +135,6 @@ db.createTableUsers = () => {
 
 db.createBase = () => {
   return new Promise((resolve, reject) => {
-    console.log(" createBase ");
     pool.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}`, (err, res) => {
       if (err) {
         reject(err);
@@ -141,6 +161,7 @@ async function checkDb() {
       await db.createTableUsers(),
       await db.createTableCategory(),
       await db.createTableGoods(),
+      await db.createTableReset(),
     ]);
     await db.addRoot();
   } catch (err) {

@@ -1,0 +1,14 @@
+include header
+div(class="popup-login")
+	div(class="popup-login-header")
+		h2 Введите новый пароль!
+	hr
+	div(class="content")
+		form(action=`/reset-confirm/${token}` method="post" class="tab-content" id="resetConfirm")
+			section
+				label(for="current-password") Пароль:
+				input(id="current-password" name="password" type="password" required)
+			button(type="submit" class="btn btn-primary") Изменить пароль
+			hr
+	div(class="popup-login-footer")
+		hr

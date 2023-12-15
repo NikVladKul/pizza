@@ -42,6 +42,7 @@ require('./modules/conf/passport');
 app.use(passport.authenticate('session'));
 
 app.use('/', routers);
+app.use('/', require('./routes/password_reset'));
 
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development

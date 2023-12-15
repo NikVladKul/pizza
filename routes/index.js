@@ -124,7 +124,9 @@ router.post('/signup', upload.none(), function (req, res, next) {
           phone: req.body.phone,
           email: req.body.email,
           addres: req.body.addres
-        }).then(res.redirect(fork.successRedirect));
+        }).then((result) => {
+          res.redirect('/login', { "message": 'Регистрация завершена' });
+        });
       }
     });
   } else if (!(req.body.phone === user.phone)) res.send({ "result": false, "message": 'Не верный номер' });

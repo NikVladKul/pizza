@@ -41,12 +41,12 @@ div(class="popup-login")
 					input(id="current-addres" name="addres" type="text" autocomplete="on" required)
 				section
 					label(for="current-phone") email:
-					input(id="current-email" name="email" type="email" autocomplete="on")
+					input(id="current-email" name="email" type="email" autocomplete="on" required)
 				section
 					label(for="current-password") Пароль:
 					input(id="current-password" name="password" type="password" autocomplete="current-password" required)
 				button(type="submit" class="btn btn-primary") Зарегистрироваться
-		a(class="recovery" href="/recovery") Забыли пароль?
+		a(class="recovery" href="/reset") Забыли пароль?
 	a(href="/")
 		img(src="/img/close.svg" class="close-popup")
 script

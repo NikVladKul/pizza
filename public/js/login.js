@@ -20,6 +20,9 @@ signupForm.onsubmit = async (event) => {
     method: 'POST',
     body: new FormData(signupForm)
   });
+  if (response.headers.get('Content-Type') === 'text/html; charset=utf-8') {
+    window.location.href = response.url;
+  }
   let result = await response.json();
   if (!result.result) showError("Ошибка регистрации", result.message);
   //console.log(result);
