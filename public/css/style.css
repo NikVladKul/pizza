@@ -257,3 +257,29 @@ button {
 section.footer {
   height: 2000px;
 }
+
+.table-order {
+  width: 100%;
+  font-size: 1.5rem;
+}
+
+.table-order tr:nth-child(2n) {
+  background: beige;
+}
+
+.table-order th {
+  border: 1px solid grey;
+  text-align: center;
+}
+
+.table-order .item-center {
+  text-align: center;
+}
+
+.table-order .bold {
+  font-weight: 700;
+}
+
+.currency {
+  text-align: right;
+}

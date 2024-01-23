@@ -1,2 +1,31 @@
 include header
-h1 Здесь будет содержимое корзины
+div(class="container")
+	h1 Ваш заказ
+	form(action="/order-make" metod="post")
+		table(class="table-order")
+			thead 
+				tr
+					th Название
+					th
+						i(class="far fa-minus-square")
+					th Кол-во
+					th
+						i(class="far fa-plus-square")
+					th Цена
+					th Стоимость
+			tbody
+				each val in goods
+					tr
+						td #{val.name}
+						td(class="item-center") 
+							i(class="far fa-minus-square item-minus")
+						td(class="item-center") #{val.quantity}
+						td(class="item-center") 
+							i(class="far fa-plus-square item-plus")
+						td(class="currency") #{val.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+						td(class="currency") #{val.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+				tr 
+					td(colspan="5" class="bold") ИТОГО:
+					td(class="currency bold") #{total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+		button(type="submit") Заказать
+include footer

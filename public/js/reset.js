@@ -14,6 +14,10 @@ resetForm.onsubmit = async (event) => {
   });
   let result = await response.json();
   if (!result.result) showError("Ошибка регистрации", result.message);
+  else showError("Сброс пароля", result.message);
+  setTimeout(() => {
+    document.getElementById("login").click();
+  }, 2000);
   //console.log(result);
 }
 

@@ -6,21 +6,22 @@ let popupGood = document.querySelector('.popup-good'); // Само окно по
 //let popupLogin = document.querySelector('.popup-login'); // Само окно попап
 let closePopupButton = document.querySelectorAll('.close-popup'); // Кнопка для закрытия попап
 let content = document.getElementById("content"); // Содержимое категории
+let user = document.getElementById("user"); // Содержимое категории
 let carousel = document.getElementById("carousel-inner"); // Карусель
-content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
-carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
+if (content) content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
+if (carousel) carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
 popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
 
 //*****************************************LOCALSTORAGE  */
 
 function updateStorageCart() { // Обновляем корзину
-  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem('cart' + user.dataset.id, JSON.stringify(cart));
 }
 
 if (logout) {
   logout.addEventListener('click', ajaxGetLogout);
-  if (localStorage.getItem('cart')) { //Если что-то осталось в корзине, загружаем
-    cart = JSON.parse(localStorage.getItem('cart'));
+  if (localStorage.getItem('cart' + user.dataset.id)) { //Если что-то осталось в корзине, загружаем
+    cart = JSON.parse(localStorage.getItem('cart' + user.dataset.id));
     getGoodId();
     //ajaxGetProductsInfo();
   }
@@ -41,11 +42,18 @@ function ajaxGetLogout() {
     });
 }
 
-cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
-  console.log(cart);
-  //popupBg.classList.add('active'); // Добавляем класс 'active' для фона
-  //popupLogin.classList.add('active');
-});
+if (cartOrder) {
+  cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
+    event.preventDefault();
+    console.log(cart);
+
+    const encodedCart = encodeURIComponent(JSON.stringify(cart));
+    window.location.href = "/order?cart=" + encodedCart;
+
+    //popupBg.classList.add('active'); // Добавляем класс 'active' для фона
+    //popupLogin.classList.add('active');
+  });
+}
 
 function getGoodId(event) {
   if (event) {
@@ -57,10 +65,10 @@ function getGoodId(event) {
       popupBg.classList.add('active'); // Добавляем класс 'active' для фона
       popupGood.classList.add('active');
     } else if (event.target.tagName === "BUTTON") { // Если клик по кнопке добавляем в корзину
-      if ("id" + event.target.dataset.id in cart) {
-        cart["id" + event.target.dataset.id] += 1;
+      if (event.target.dataset.id in cart) {
+        cart[event.target.dataset.id] += 1;
       } else {
-        cart["id" + event.target.dataset.id] = 1;
+        cart[event.target.dataset.id] = 1;
       }
     }
   }

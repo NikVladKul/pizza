@@ -5,7 +5,7 @@ const upload = multer();
 const crypto = require('crypto');
 const db = require('../modules/conf/dbmysql').db;
 const sendEmail = require('../modules/lib/mail').sendEmail;
-
+const genPassword = require('../modules/lib/crypto').genPassword;
 
 router.get('/reset', (req, res) => res.render('reset'))
 
@@ -19,7 +19,6 @@ router.get('/reset-confirm/:token', (req, res) => {
     }
   });
 })
-
 
 router.post('/reset', upload.none(), (req, res) => {
   if (req.body.email) {
@@ -35,7 +34,7 @@ router.post('/reset', upload.none(), (req, res) => {
           Ссылка действительна в течении 2х часов. 
           Если вы не запрашивали ссылку, игнорируйте это сообщение`
         });
-        res.send({ "result": false, "message": 'Такой email есть!' });// Пользователь с таким телефоном есть!
+        res.send({ "result": true, "message": 'Ссылка отправлена на почту!' });// Пользователь с таким телефоном есть!
       } else {
         res.send({ "result": false, "message": 'Такой email не зарегистрирован!' });// Пользователь с таким телефоном есть!
       }
@@ -51,27 +50,14 @@ router.post('/reset', upload.none(), (req, res) => {
 router.post('/reset-confirm/:token', async (req, res) => {
   const token = req.params.token;
   const userId = await db.getReset(token);
-
-  // Обновить пароль у user
-  // Удалить reset token
-  // Перенаправить на login сообщить об успехе
-  console.log("new password");
-
-  /* Update user */
-  //let user = await User.findOne({ _id: passwordReset.user })
-  //user.password = req.body.password
-
-  //user.save().then(async savedUser => {
-  //  /* Delete password reset document in collection */
-  //  await PasswordReset.deleteOne({ _id: passwordReset._id })
-  //  /* Redirect to login page with success message */
-  //  req.flash('success', 'Password reset successful')
-  //  res.redirect('/login')
-  //}).catch(error => {
-  //  /* Redirect back to reset-confirm page */
-  //  req.flash('error', 'Failed to reset password please try again')
-  //  return res.redirect(`/reset-confirm/${token}`)
-  //})
+  if (userId) {
+    const saltHash = genPassword(req.body.password);
+    await db.updateUserPassword(saltHash.salt, saltHash.hash, userId.user_id);
+    await db.deleteReset(userId.user_id);
+    res.render("login", { "message": 'Пароль изменен!' })
+  } else {
+    res.render("login", { "message": 'Ошибка, попробуйте позже.' })
+  }
 });
 
 module.exports = router

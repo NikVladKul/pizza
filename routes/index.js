@@ -35,13 +35,30 @@ router.get('/', (request, response) => { // стартовая страница
       return db.getAllGoodsStock();
     }).then((stock) => {
       if (request.isAuthenticated()) {
-        response.render('index', { "category": category, "goods": goods, "stock": stock, "user": request.user.name });
+        response.render('index', { "category": category, "goods": goods, "stock": stock, "user": request.user.name, "user_id": request.user.id });
       } else response.render('index', { "category": category, "goods": goods, "stock": stock });
     });
 });
 
 router.get('/order', isAuth, (request, response) => { // оформление заказа
-  response.render('order', { "user": request.user.name });
+  const cart = JSON.parse(request.query.cart);
+  const list = Object.keys(cart);
+  const products = {};
+  let total = 0;
+
+  db.getGoodsInOrder(list)
+    .then((result) => {
+      for (i = 0; i < result.length; i++) {
+        products[result[i]['id']] = result[i];
+      }
+      for (let key in cart) {
+        products[key]["amount"] = products[key]["cost"] * cart[key];
+        total += products[key]["amount"];
+        products[key]["quantity"] = cart[key];
+      }
+      console.log(products);
+      response.render('order', { "user": request.user.name, "total": total, "goods": products });
+    });
 });
 
 router.get('/signup', function (req, res, next) { // регистрация
@@ -82,6 +99,7 @@ router.get('/logout', function (req, res, next) { // выход
 });
 
 router.get('/login-fail', function (req, res, next) { // вход при попытке что-то сделать будуче не авторизованным
+  console.log(req.url);
   fork.successRedirect = '/order';
   res.render('login', { "message": 'Вы не авторизованы!' });
 });
@@ -100,6 +118,10 @@ router.get('/login-error', function (req, res, next) { // вход при оши
 // ***************************** POST запросы **************************************
 
 router.post('/login', passport.authenticate('local', fork));
+
+router.post('/order-make', function (req, res, next) {
+  res.end("bla bla bla");
+});
 
 router.post('/logout', function (req, res, next) {
   req.logout(function (err) {
@@ -125,7 +147,8 @@ router.post('/signup', upload.none(), function (req, res, next) {
           email: req.body.email,
           addres: req.body.addres
         }).then((result) => {
-          res.redirect('/login', { "message": 'Регистрация завершена' });
+          res.send({ "result": true, "message": 'Регистрация завершена' });
+          //res.render('login', { "message": 'Регистрация завершена' });
         });
       }
     });

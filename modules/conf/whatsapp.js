@@ -67,4 +67,12 @@ client.on('ready', () => {
 
 client.initialize();
 
+setInterval(() => {
+  if (Math.random() < 0.8) {
+    try { client.sendPresenceAvailable(); } catch (e) { console.log("Erro: sendPresenceAvailable"); }
+  } else {
+    //try { client.sendPresenceUnavailable(); } catch (e) { console.log("Erro: sendPresenceUnavailable"); }
+  }
+}, 300000);
+
 module.exports.clientWhatsapp = client;

@@ -30,6 +30,18 @@ db.getGoodsInCategory = (cat) => {
   });
 };
 
+db.getGoodsInOrder = (list) => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM goods WHERE id IN (" + list + ")", (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
 db.getAllGoodsStock = () => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM goods WHERE (stock=1 AND activ=1)", (err, res) => {
@@ -97,6 +109,18 @@ db.getUserEmail = (email) => {
 db.addUser = (user) => {
   return new Promise((resolve, reject) => {
     pool.query(`INSERT INTO users(name, passw, activ, phone, email, addres, salt) VALUES('${user.name}', '${user.passw}', 1, '${user.phone}', '${user.email}', '${user.addres}', '${user.salt}')`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.updateUserPassword = (salt, hash, userId) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE users SET salt = '${salt}', passw = '${hash}' WHERE id = '${userId}'`, (err, res) => {
       if (err) {
         console.log(err);
         reject(err);

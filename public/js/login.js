@@ -1,4 +1,5 @@
 const getCode = document.getElementById("get-code"); //кнопка получения кода проверки
+//const loginTab = document.getElementById("login-tab");
 const elemTimer = document.getElementById("timer"); //таймер для кнопки отправки данных на регистрацию
 const currentPhone = document.getElementById("current-phone");//введенный номер телефона
 const popupAlertName = document.querySelector(".popup-error-name"); //Заголовок окна
@@ -20,12 +21,12 @@ signupForm.onsubmit = async (event) => {
     method: 'POST',
     body: new FormData(signupForm)
   });
-  if (response.headers.get('Content-Type') === 'text/html; charset=utf-8') {
-    window.location.href = response.url;
-  }
   let result = await response.json();
   if (!result.result) showError("Ошибка регистрации", result.message);
-  //console.log(result);
+  else {
+    showError("Регистрация", result.message);
+    document.getElementById("login-tab").click();
+  }
 }
 
 function timer() {

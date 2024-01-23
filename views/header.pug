@@ -5,6 +5,7 @@ html(lang="ru")
 		meta(name="viewport" content="width=device-width, initial-scale=1.0")
 		link(rel="stylesheet" href="/css/bootstrap.min.css")
 		script(src="/js/bootstrap.bundle.min.js") 
+		link(rel="stylesheet" href="/css/all.min.css")
 		link(rel="stylesheet" href="/css/style.css")
 		title Пицца и не только
 	body
@@ -20,10 +21,10 @@ html(lang="ru")
 						h4 Любовь уходит, а пиццу можете заказать ВСЕГДА!
 					div(class="login col-2")
 						if user
-							p #{user}
+							p(id="user" data-id={user_id}) #{user}
 							a(href="/logout" class="logout")
 								img(src="/img/logout.svg" alt="logout")
 						else
-							a(href="/login")
+							a(href="/login" id="login")
 								p Вход 
 								img(src="/img/login.svg" alt="login")
