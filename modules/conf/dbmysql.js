@@ -118,6 +118,32 @@ db.addUser = (user) => {
   })
 };
 
+db.addOrder = (idOrder, goodsRow) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`INSERT INTO orders(id, goods, quantity, cost) VALUES('${idOrder}', '${goodsRow.id}', '${goodsRow.quantity
+      }', '${goodsRow.cost}')`, (err, res) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+        resolve(res);
+      });
+  })
+};
+
+db.addOrderHead = (idOrder, user, amount, delivery) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`INSERT INTO headorders(id, iduser, totalamount, delivery) VALUES('${idOrder}', '${user}', '${amount}', '${delivery}')`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+
 db.updateUserPassword = (salt, hash, userId) => {
   return new Promise((resolve, reject) => {
     pool.query(`UPDATE users SET salt = '${salt}', passw = '${hash}' WHERE id = '${userId}'`, (err, res) => {

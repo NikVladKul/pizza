@@ -1,4 +1,5 @@
 let cart = {}; // Корзина
+let buttonAddToCart = document.querySelector(".add-to-cart");
 let logout = document.querySelector('.logout'); // Ссылка выход
 let cartOrder = document.querySelector('.cart-order'); // Оформление корзины
 let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
@@ -6,9 +7,11 @@ let popupGood = document.querySelector('.popup-good'); // Само окно по
 //let popupLogin = document.querySelector('.popup-login'); // Само окно попап
 let closePopupButton = document.querySelectorAll('.close-popup'); // Кнопка для закрытия попап
 let content = document.getElementById("content"); // Содержимое категории
+let tableOrder = document.getElementById("table-order"); // Содержимое категории
 let user = document.getElementById("user"); // Содержимое категории
 let carousel = document.getElementById("carousel-inner"); // Карусель
 if (content) content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
+if (tableOrder) tableOrder.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
 if (carousel) carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
 popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
 
@@ -16,13 +19,19 @@ popupGood.addEventListener('click', function (event) { getGoodId(event) }); // �
 
 function updateStorageCart() { // Обновляем корзину
   localStorage.setItem('cart' + user.dataset.id, JSON.stringify(cart));
+  const encodedCart = encodeURIComponent(JSON.stringify(cart));
+  if (cartOrder) cartOrder.href = "/order?cart=" + encodedCart;
 }
 
-if (logout) {
+if (logout) {//если выполнен вход
   logout.addEventListener('click', ajaxGetLogout);
   if (localStorage.getItem('cart' + user.dataset.id)) { //Если что-то осталось в корзине, загружаем
     cart = JSON.parse(localStorage.getItem('cart' + user.dataset.id));
-    getGoodId();
+    if (cartOrder) {
+      const encodedCart = encodeURIComponent(JSON.stringify(cart));
+      cartOrder.href = "/order?cart=" + encodedCart;
+      getGoodId();
+    }
     //ajaxGetProductsInfo();
   }
 }
@@ -39,31 +48,20 @@ function ajaxGetLogout() {
       if (response) console.log(response);
       cart = {};
       cartOrder.classList.remove('active');
+      cartOrder.href = "/order"
     });
-}
-
-if (cartOrder) {
-  cartOrder.addEventListener('click', function (event) { // обработчик на Оформление корзины
-    event.preventDefault();
-    console.log(cart);
-
-    const encodedCart = encodeURIComponent(JSON.stringify(cart));
-    window.location.href = "/order?cart=" + encodedCart;
-
-    //popupBg.classList.add('active'); // Добавляем класс 'active' для фона
-    //popupLogin.classList.add('active');
-  });
 }
 
 function getGoodId(event) {
   if (event) {
     event.preventDefault();
-    if ((event.target.tagName === "IMG") && ((event.currentTarget === content) || (event.currentTarget === carousel))) { // Если клик по картинке открываем попап
+    if ((event.target.tagName === "IMG") && ((event.currentTarget === content) || (event.currentTarget === carousel)) || (event.target.tagName === "TD")) { // Если клик по картинке открываем попап
       let url = "/mysql?good_id=" + event.target.dataset.id;
       fetch(url).then((result) => result.json()).then((body) => fillPopupGood(body[0]));
 
       popupBg.classList.add('active'); // Добавляем класс 'active' для фона
       popupGood.classList.add('active');
+      if (event.target.tagName != "TD") buttonAddToCart.classList.add('act');
     } else if (event.target.tagName === "BUTTON") { // Если клик по кнопке добавляем в корзину
       if (event.target.dataset.id in cart) {
         cart[event.target.dataset.id] += 1;
@@ -73,7 +71,7 @@ function getGoodId(event) {
     }
   }
   if (Object.keys(cart).length !== 0) {
-    cartOrder.classList.add('active');
+    if (cartOrder) cartOrder.classList.add('active');
     updateStorageCart();
   }
 }
@@ -91,22 +89,19 @@ function fillPopupGood(good) { // Заполняем попап форму
 
 for (let i = 0; i < closePopupButton.length; i++) {
   closePopupButton[i].addEventListener('click', () => { // Вешаем обработчик на крестик
-    popupBg.classList.remove('active'); // Убираем активный класс с фона
-    popupGood.classList.remove('active');
-    //popupLogin.classList.remove('active');
+    closePopup();
   });
 
 }
 
 document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
   if (e.target === popupBg) { // Если цель клика - фот, то:
-    popupBg.classList.remove('active'); // Убираем активный класс с фона
-    popupGood.classList.remove('active'); // И с окна
-    //popupLogin.classList.remove('active'); // И с окна
+    closePopup();
   }
 });
 
-
-
-
-
+function closePopup() {
+  popupBg.classList.remove('active'); // Убираем активный класс с фона
+  popupGood.classList.remove('active'); // И с окна
+  buttonAddToCart.classList.remove('act');
+}

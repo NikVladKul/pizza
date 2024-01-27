@@ -1,31 +1,40 @@
 include header
-div(class="container")
-	h1 Ваш заказ
-	form(action="/order-make" metod="post")
-		table(class="table-order")
-			thead 
-				tr
-					th Название
-					th
-						i(class="far fa-minus-square")
-					th Кол-во
-					th
-						i(class="far fa-plus-square")
-					th Цена
-					th Стоимость
-			tbody
-				each val in goods
+section(class="main")
+	div(class="container")
+		h1 Ваш заказ
+		form(action="/confirm-order" method="post" id="confirmOrderForm" enctype="multipart/form-data")
+			table(class="table-order" id="table-order")
+				thead 
 					tr
-						td #{val.name}
-						td(class="item-center") 
-							i(class="far fa-minus-square item-minus")
-						td(class="item-center") #{val.quantity}
-						td(class="item-center") 
-							i(class="far fa-plus-square item-plus")
-						td(class="currency") #{val.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-						td(class="currency") #{val.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-				tr 
-					td(colspan="5" class="bold") ИТОГО:
-					td(class="currency bold") #{total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-		button(type="submit") Заказать
+						th Название
+						th
+							i(class="far fa-minus-square")
+						th Кол-во
+						th
+							i(class="far fa-plus-square")
+						th Цена
+						th Стоимость
+				tbody
+					each val in goods
+						tr
+							td(data-id=val.id.toString() style="cursor: pointer") #{val.name}
+							td(class="item-center") 
+								i(class="far fa-minus-square item-minus" data-goods_id=val.id.toString() style="cursor: pointer")
+							td(class="item-center" id=val.id.toString()) #{val.quantity}
+							td(class="item-center") 
+								i(class="far fa-plus-square item-plus" data-goods_id=val.id.toString() style="cursor: pointer")
+							td(class="currency") #{val.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+							td(class="currency" id=val.id.toString()+"a") #{val.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+					tr 
+						td(colspan="5" class="bold") ИТОГО:
+						td(class="currency bold" id="total") #{total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+			input(type="hidden" name="cart" value={goods} id="cart")
+			input(type="hidden" name="user" value="" id="orderUser")
+			input(type="hidden" name="amount" value="" id="amount")
+			section(class="delivery")
+				input(id="delivery" name="delivery" type="checkbox")
+				label(for="delivery") - Доставка
+			button(type="submit") Заказать
 include footer
+script
+	include ../public/js/order.js

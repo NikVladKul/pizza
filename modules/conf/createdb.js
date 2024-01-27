@@ -103,6 +103,52 @@ db.createTableGoods = () => {
   })
 };
 
+db.createTableOrders = () => {
+  return new Promise((resolve, reject) => {
+    //***********    Таблица Goods  продукты    */
+    pool.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.orders (
+                    id varchar(20) DEFAULT NULL, 
+                    goods int DEFAULT NULL, 
+                    quantity int DEFAULT NULL, 
+                    cost int DEFAULT NULL, 
+                    ready tinyint DEFAULT NULL) 
+                    ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
+      if (err) {
+        console.log('Ошибка сервера');
+        reject(err);
+      } else {
+        if (res.warningStatus === 1) console.log('Таблица orders найдена');
+        else console.log('Таблица orders создана');
+        resolve();
+      }
+    });
+  })
+};
+
+db.createTableHeadOrders = () => {
+  return new Promise((resolve, reject) => {
+    //***********    Таблица Goods  продукты    */
+    pool.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.headorders (
+                    id varchar(20) PRIMARY KEY, 
+                    iduser int DEFAULT NULL, 
+                    totalamount int DEFAULT NULL, 
+                    delivery tinyint DEFAULT NULL,
+                    ready tinyint DEFAULT NULL) 
+                    ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
+      if (err) {
+        console.log('Ошибка сервера');
+        reject(err);
+      } else {
+        if (res.warningStatus === 1) console.log('Таблица HeadOrders найдена');
+        else console.log('Таблица HeadOrders создана');
+        resolve();
+      }
+    });
+  })
+};
+
+
+
 db.createTableUsers = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Users  пользователи    */
@@ -153,6 +199,27 @@ db.addRoot = function () {
   })
 };
 
+db.createTableConstatnts = () => {
+  return new Promise((resolve, reject) => {
+    //***********    Таблица Goods  продукты    */
+    pool.query(`CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.constants (
+                    namesite varchar(50) DEFAULT NULL, 
+                    slogan varchar(50) DEFAULT NULL, 
+                    daliverycost int DEFAULT NULL)
+                    ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
+      if (err) {
+        console.log('Ошибка сервера');
+        reject(err);
+      } else {
+        if (res.warningStatus === 1) console.log('Таблица constants найдена');
+        else console.log('Таблица constants создана');
+        resolve();
+      }
+    });
+  })
+};
+
+
 async function checkDb() {
   try {
     Promise.all([
@@ -162,6 +229,9 @@ async function checkDb() {
       await db.createTableCategory(),
       await db.createTableGoods(),
       await db.createTableReset(),
+      await db.createTableOrders(),
+      await db.createTableHeadOrders(),
+      await db.createTableConstatnts(),
     ]);
     await db.addRoot();
   } catch (err) {

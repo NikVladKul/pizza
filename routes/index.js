@@ -56,8 +56,8 @@ router.get('/order', isAuth, (request, response) => { // оформление з
         total += products[key]["amount"];
         products[key]["quantity"] = cart[key];
       }
-      console.log(products);
-      response.render('order', { "user": request.user.name, "total": total, "goods": products });
+      //console.log(products);
+      response.render('order', { "user": request.user.name, "user_id": request.user.id, "total": total, "goods": products });
     });
 });
 
@@ -99,7 +99,7 @@ router.get('/logout', function (req, res, next) { // выход
 });
 
 router.get('/login-fail', function (req, res, next) { // вход при попытке что-то сделать будуче не авторизованным
-  console.log(req.url);
+  //console.log(req.url);
   fork.successRedirect = '/order';
   res.render('login', { "message": 'Вы не авторизованы!' });
 });
@@ -119,8 +119,30 @@ router.get('/login-error', function (req, res, next) { // вход при оши
 
 router.post('/login', passport.authenticate('local', fork));
 
-router.post('/order-make', function (req, res, next) {
-  res.end("bla bla bla");
+router.post('/confirm-order', upload.none(), function (req, res, next) {
+  const cart = JSON.parse(req.body.cart);
+  const user = JSON.parse(req.body.user);
+  const amount = JSON.parse(req.body.amount);
+  const delivery = (Boolean(req.body.delivery)) ? 1 : 0;
+  const idOrder = Date.now().toString();
+  let accepted = true;
+
+  db.addOrderHead(idOrder, user, amount, delivery)
+    .then(result => {
+      for (const key in cart) {
+        if (Object.hasOwnProperty.call(cart, key)) {
+          const goodsRow = cart[key];
+          db.addOrder(idOrder, goodsRow)
+            .then(result => { }).catch(err => console.log(err));
+        }
+      }
+
+    });
+  if (accepted) res.render('accepted', { "user": req.user.name, "user_id": req.user.id });
+
+  //console.log(cart);
+  //console.log(user, amount, Boolean(req.body.delivery));
+  //res.end("bla bla bla");
 });
 
 router.post('/logout', function (req, res, next) {
