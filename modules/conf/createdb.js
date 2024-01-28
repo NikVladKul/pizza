@@ -162,7 +162,7 @@ db.createTableUsers = () => {
                 activ tinyint DEFAULT NULL,
                 isRoot tinyint DEFAULT NULL,
                 isAdmin tinyint DEFAULT NULL,
-                isCoock tinyint DEFAULT NULL,
+                isCook tinyint DEFAULT NULL,
                 salt varchar(64) DEFAULT NULL,
                 UNIQUE KEY phone_UNIQUE (phone),
                 UNIQUE KEY name_UNIQUE (name))

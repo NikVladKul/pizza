@@ -1,16 +1,33 @@
 module.exports.isAuth = (req, res, next) => {
   if (req.isAuthenticated()) {
+    console.log(req.user);
     next();
   } else {
     res.redirect('/login-fail');
-    //res.status(401).json({ msg: 'You are not authorized to view this resource' });
   }
 }
 
 module.exports.isAdmin = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.admin) {
+  if (req.isAuthenticated() && req.user.isadmin === 1) {
     next();
   } else {
-    res.status(401).json({ msg: 'You are not authorized to view this resource because you are not an admin.' });
+    res.redirect('/login-fail');
   }
 }
+
+module.exports.isCook = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.iscook === 1) {
+    next();
+  } else {
+    res.redirect('/login-fail');
+  }
+}
+
+
+//module.exports.isAdmin = (req, res, next) => {
+//  if (req.isAuthenticated() && req.user.admin) {
+//    next();
+//  } else {
+//    res.status(401).json({ msg: 'You are not authorized to view this resource because you are not an admin.' });
+//  }
+//}

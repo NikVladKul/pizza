@@ -24,7 +24,7 @@ passport.use('local', new LocalStrategy({ usernameField: 'phone' }, (username, p
 
 passport.serializeUser(function (user, cb) {
   process.nextTick(function () {
-    cb(null, { id: user.id, name: user.name });
+    cb(null, { id: user.id, name: user.name, isadmin: user.isAdmin, iscook: user.isCook });
   });
 });
 

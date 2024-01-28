@@ -54,6 +54,19 @@ db.getAllGoodsStock = () => {
   });
 };
 
+db.getAllGoods = () => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM goods", (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
+
 db.getGoodId = (id) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM goods WHERE (id=" + id + ")", (err, res) => {

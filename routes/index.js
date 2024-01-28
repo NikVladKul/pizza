@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const passport = require('passport');
 const isAuth = require('./auth').isAuth;
+const isAdmin = require('./auth').isAdmin;
+const isCook = require('./auth').isCook;
 const genPassword = require('../modules/lib/crypto').genPassword;
 const clientWhatsapp = require('../modules/conf/whatsapp').clientWhatsapp;
 const multer = require('multer');
@@ -12,6 +14,20 @@ let user = { phone: "", code: "" };
 let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
 
 // *************************** GET запросы ****************************
+router.get('/admin', isAdmin, (req, res) => {
+  db.getAllGoods()
+    .then((goods) => {
+      db.getAllCategory()
+        .then((category) => {
+          res.render('admin', { "goods": goods.sort(sortArray('name', false, (a) => a.toUpperCase())), "category": category });
+        })
+    });
+});
+
+router.get('/cook', isCook, (req, res) => {
+  res.render('cook');
+});
+
 
 router.get('/', (request, response) => { // стартовая страница
   fork.successRedirect = '/';
@@ -35,7 +51,7 @@ router.get('/', (request, response) => { // стартовая страница
       return db.getAllGoodsStock();
     }).then((stock) => {
       if (request.isAuthenticated()) {
-        response.render('index', { "category": category, "goods": goods, "stock": stock, "user": request.user.name, "user_id": request.user.id });
+        response.render('index', { "category": category, "goods": goods, "stock": stock, "user": request.user.name, "user_id": request.user.id, "is_admin": request.user.isadmin, "is_cook": request.user.iscook });
       } else response.render('index', { "category": category, "goods": goods, "stock": stock });
     });
 });
@@ -125,24 +141,27 @@ router.post('/confirm-order', upload.none(), function (req, res, next) {
   const amount = JSON.parse(req.body.amount);
   const delivery = (Boolean(req.body.delivery)) ? 1 : 0;
   const idOrder = Date.now().toString();
-  let accepted = true;
 
   db.addOrderHead(idOrder, user, amount, delivery)
     .then(result => {
+      const promises = [];
       for (const key in cart) {
         if (Object.hasOwnProperty.call(cart, key)) {
           const goodsRow = cart[key];
-          db.addOrder(idOrder, goodsRow)
-            .then(result => { }).catch(err => console.log(err));
+          promises.push(db.addOrder(idOrder, goodsRow));
         }
       }
-
+      Promise.all(promises)
+        .then(() => {
+          //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          res.render('accepted', { "user": req.user.name, "user_id": req.user.id, "delivery": delivery });
+        })
+        .catch((err) => console.log(err))
     });
-  if (accepted) res.render('accepted', { "user": req.user.name, "user_id": req.user.id });
 
-  //console.log(cart);
-  //console.log(user, amount, Boolean(req.body.delivery));
-  //res.end("bla bla bla");
 });
 
 router.post('/logout', function (req, res, next) {
@@ -215,6 +234,23 @@ function randomCode(length = 4) {
     result += chars[index];
   }
   return result;
+}
+
+const sortArray = (field, reverse, primer) => {
+
+  const key = primer ?
+    function (x) {
+      return primer(x[field]);
+    } :
+    function (x) {
+      return x[field];
+    };
+
+  reverse = !reverse ? 1 : -1;
+
+  return function (a, b) {
+    return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+  }
 }
 
 module.exports = router;

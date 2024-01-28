@@ -1,0 +1,61 @@
+html(lang="ru")
+	head
+		include head
+	body
+		.container-admin
+			h1(style="text-align: center") Панель администратора
+			div(class="admin-nav-header")
+				ul(class="nav nav-tabs" id="adminTab" role="tablist")
+					li(class="nav-item" role="presentation")
+						button(class="nav-link active" id="goods-tab" data-bs-toggle="tab" data-bs-target="#goods-tab-pane" type="button" role="tab" aria-controls="goods-tab-pane" aria-selected="true") Продукты
+					li(class="nav-item" role="presentation")
+						button(class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#category-tab-pane" type="button" role="tab" aria-controls="category-tab-pane" aria-selected="false") Категории
+			hr
+			div(class="tab-content")
+				div(class="tab-pane fade show active" id="goods-tab-pane" role="tabpanel" aria-labelledby="goods-tab" tabindex="0")
+					table(class="table-goods")
+						thead
+							tr
+								th(id="filterCategory") Категория
+								th Название
+								th Фото
+								th Описание
+								th Цена
+								th Исп.
+								th Акц.
+						tbody
+							each item in goods
+								-const cat = category.find((elem)=>elem.id === item.category)
+								tr 
+									td #{cat.name}
+									td #{item.name}
+									td #{item.img}
+									td #{item.description}
+									td(class="currency") #{item.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+									td #{item.activ}
+									td #{item.stock}
+				div(class="tab-pane fade" id="category-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
+					form(action="/signup" method="post" id="signupForm" enctype="multipart/form-data")
+						section
+							label(for="username") Имя:
+							input(id="username" name="username" type="text" autocomplete="on" required autofocus)
+						section
+							label(for="current-phone") Телефон:
+							input(class="tel" id="current-phone" name="phone" type="tel" autocomplete="on" required)
+							button(id="get-code" class="btn btn-primary" type="button") Получить код
+								p(id="timer")
+						section(id="code")
+							label(for="input-code") Код проверки:
+							input(id="input-code" name="code" type="text" required)
+						section
+							label(for="current-phone") Адрес:
+							input(id="current-addres" name="addres" type="text" autocomplete="on" required)
+						section
+							label(for="current-phone") email:
+							input(id="current-email" name="email" type="email" autocomplete="on" required)
+						section
+							label(for="current-password") Пароль:
+							input(id="current-password" name="password" type="password" autocomplete="current-password" required)
+						button(type="submit" class="btn btn-primary") Зарегистрироваться
+script
+	include ../public/js/admin.js

@@ -3,6 +3,12 @@
   /*flex-grow: 1;*/
 }
 
+.container-admin {
+  max-width: 1700px;
+  margin: 0 auto 0 auto;
+  /*flex-grow: 1;*/
+}
+
 html {
   height: 100%;
 }
@@ -165,7 +171,7 @@ nav.nav {
   visibility: visible;
 }
 
-.popup-login .tab-content,
+.popup-login #loginTabContent,
 button {
   width: 100%;
   font-size: 25px;
@@ -213,12 +219,12 @@ button {
   font-size: 25px;
 }
 
-.tab-content .tab-pane {
+#loginTabContent .tab-pane {
   min-height: 300px;
   padding: 10px;
 }
 
-.tab-content section {
+#loginTabContent section {
   clear: both;
   text-align: right;
   line-height: 25px;
@@ -226,12 +232,12 @@ button {
   vertical-align: middle;
 }
 
-.tab-content label {
+#loginTabContent label {
   float: left;
   padding-right: 10px;
 }
 
-.tab-content {
+#loginTabContent {
   float: left;
 }
 
@@ -291,18 +297,23 @@ input[type=checkbox] {
   margin-right: 10px;
 }
 
-.table-order {
+.table-order,
+.table-goods {
   width: 100%;
   font-size: 1.5rem;
 }
 
-.table-order tr:nth-child(2n) {
+.table-order tr:nth-child(2n),
+.table-goods tr:nth-child(2n) {
   background: beige;
 }
 
-.table-order th {
+.table-order th,
+.table-goods th {
   border: 1px solid grey;
   text-align: center;
+  padding-left: 7px;
+  padding-right: 7px;
 }
 
 .table-order .item-center {
@@ -315,4 +326,13 @@ input[type=checkbox] {
 
 .currency {
   text-align: right;
+}
+
+td {
+  border: 1px solid grey;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 7px;
+  padding-right: 7px;
+  /*white-space: nowrap;*/
 }

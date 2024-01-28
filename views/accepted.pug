@@ -2,6 +2,10 @@ include header
 section(class="main")
 	div(class="container")
 		h1 Заказ принят
+		if (delivery === 1)
+			h2 Ожидайте доставку
+		else
+			h2 По готовности получите сообщение
 include footer
 script
 	include ../public/js/accepted.js

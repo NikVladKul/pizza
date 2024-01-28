@@ -10,10 +10,21 @@ let content = document.getElementById("content"); // Содержимое кат
 let tableOrder = document.getElementById("table-order"); // Содержимое категории
 let user = document.getElementById("user"); // Содержимое категории
 let carousel = document.getElementById("carousel-inner"); // Карусель
+
 if (content) content.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
 if (tableOrder) tableOrder.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на содержимое
 if (carousel) carousel.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на карусель
 popupGood.addEventListener('click', function (event) { getGoodId(event) }); // обработчик на попап
+document.addEventListener('keydown', function (event) {
+  if (user) {
+    if (event.altKey && event.shiftKey && event.keyCode === 65 && user.dataset.is_admin === '1') {
+      window.location.href = "/admin";
+    }
+    if (event.altKey && event.shiftKey && event.keyCode === 67 && user.dataset.is_cook === '1') {
+      window.location.href = "/cook";
+    }
+  }
+});
 
 //*****************************************LOCALSTORAGE  */
 
