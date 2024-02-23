@@ -11,7 +11,11 @@ module.exports.isAdmin = (req, res, next) => {
   if (req.isAuthenticated() && req.user.isadmin === 1) {
     next();
   } else {
-    res.redirect('/login-fail');
+    //res.locals.msg = 'У вас не достаточно прав!';
+    //console.log(res.locals);
+    let msg = encodeURIComponent('У вас не достаточно прав');
+    //res.json({ msg: 'У вас не достаточно прав!' });
+    res.redirect('/login-fail?msg=' + msg);
   }
 }
 

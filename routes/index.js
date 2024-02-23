@@ -6,8 +6,11 @@ const isCook = require('./auth').isCook;
 const genPassword = require('../modules/lib/crypto').genPassword;
 const clientWhatsapp = require('../modules/conf/whatsapp').clientWhatsapp;
 const multer = require('multer');
-const upload = multer();
+const upload = multer({ dest: './upload/' });
 const db = require('../modules/conf/dbmysql').db;
+const sharp = require("sharp");
+const unlinkSync = require("fs").unlinkSync;
+sharp.cache(false);
 
 let user = { phone: "", code: "" };
 
@@ -19,8 +22,9 @@ router.get('/admin', isAdmin, (req, res) => {
     .then((goods) => {
       db.getAllCategory()
         .then((category) => {
+          //console.log(category);
           res.render('admin', { "goods": goods.sort(sortArray('name', false, (a) => a.toUpperCase())), "category": category });
-        })
+        }).catch((err) => console.log(err));
     });
 });
 
@@ -57,24 +61,26 @@ router.get('/', (request, response) => { // стартовая страница
 });
 
 router.get('/order', isAuth, (request, response) => { // оформление заказа
-  const cart = JSON.parse(request.query.cart);
-  const list = Object.keys(cart);
-  const products = {};
-  let total = 0;
+  if (request.query.cart) {
+    const cart = JSON.parse(request.query.cart);
+    const list = Object.keys(cart);
+    const products = {};
+    let total = 0;
 
-  db.getGoodsInOrder(list)
-    .then((result) => {
-      for (i = 0; i < result.length; i++) {
-        products[result[i]['id']] = result[i];
-      }
-      for (let key in cart) {
-        products[key]["amount"] = products[key]["cost"] * cart[key];
-        total += products[key]["amount"];
-        products[key]["quantity"] = cart[key];
-      }
-      //console.log(products);
-      response.render('order', { "user": request.user.name, "user_id": request.user.id, "total": total, "goods": products });
-    });
+    db.getGoodsInOrder(list)
+      .then((result) => {
+        for (i = 0; i < result.length; i++) {
+          products[result[i]['id']] = result[i];
+        }
+        for (let key in cart) {
+          products[key]["amount"] = products[key]["cost"] * cart[key];
+          total += products[key]["amount"];
+          products[key]["quantity"] = cart[key];
+        }
+        //console.log(products);
+        response.render('order', { "user": request.user.name, "user_id": request.user.id, "total": total, "goods": products });
+      });
+  } else response.redirect('/');
 });
 
 router.get('/signup', function (req, res, next) { // регистрация
@@ -115,9 +121,10 @@ router.get('/logout', function (req, res, next) { // выход
 });
 
 router.get('/login-fail', function (req, res, next) { // вход при попытке что-то сделать будуче не авторизованным
-  //console.log(req.url);
+  let message = req.query.msg;
+  console.log(message);
   fork.successRedirect = '/order';
-  res.render('login', { "message": 'Вы не авторизованы!' });
+  res.render('login', { "message": (message) ? message : 'Вы не авторизованы!' });
 });
 
 router.get('/login-error', function (req, res, next) { // вход при ошибке авторизации
@@ -134,6 +141,29 @@ router.get('/login-error', function (req, res, next) { // вход при оши
 // ***************************** POST запросы **************************************
 
 router.post('/login', passport.authenticate('local', fork));
+
+router.post('/upload', upload.single('filedata'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(404).send("Не корректный файл");
+    }
+
+    const compressedFileName = req.file.filename.split(".")[0];
+    const compressedImageFilePath = `./public/photo/${compressedFileName}.jpg`;
+
+    await sharp(req.file.path)
+      .jpeg({ quality: 25 })
+      .toFile(compressedImageFilePath)
+      .then(() => {
+        unlinkSync(`./upload/${compressedFileName}`);
+        //unlinkSync(`./public${req.body.oldUrl}`);
+        res.send(`/photo/${compressedFileName}.jpg`);
+      });
+  } catch (error) {
+    res.send(false);
+    console.log(error);
+  }
+})
 
 router.post('/confirm-order', upload.none(), function (req, res, next) {
   const cart = JSON.parse(req.body.cart);
@@ -204,7 +234,7 @@ router.post('/signup', upload.none(), function (req, res, next) {
 
 // ***************************** MySQL запросы **************************************
 
-router.use("/mysql", function (request, response) { // запросы к базе
+router.use("/mysql", async function (request, response) { // запросы к базе
   if (request.query.goods_in_cat) {
     db.getGoodsInCategory(request.query.goods_in_cat)
       .then((result) => response.json(result));
@@ -212,6 +242,18 @@ router.use("/mysql", function (request, response) { // запросы к баз�
   } else if (request.query.good_id) {
     db.getGoodId(request.query.good_id)
       .then((result) => response.json(result));
+  } else if (request.query.goods_udate_id) {
+    const buffers = [];
+    for await (const chunk of request) {
+      buffers.push(chunk);
+    }
+    const data = Buffer.concat(buffers).toString();
+    const param = JSON.parse(data); // парсим строку в json
+
+    //console.log(param);
+    db.updateGoods(request.query.goods_udate_id, param.field, param.value)
+      .then(result => response.json(result));
+    //response.json('');
   }
 });
 

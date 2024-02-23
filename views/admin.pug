@@ -1,39 +1,84 @@
+doctype html
 html(lang="ru")
 	head
 		include head
+		script
+			include ../public/js/initadmin.js
 	body
+		div(class="popup__bg")
+			div.container
+				div(class="popup-good")
+					img(class="popup-form-good img" src="" alt="")
+					img(src="/img/close.svg" class="close-popup")
+			div.popup-upload
+				.header
+					h2 Выберите фото
+				hr
+				form(action="/upload" method="post" enctype="multipart/form-data" id="uploadImg")
+					label
+						input(type="file" name="filedata" id="fileInput" style="display:none" onchange="showLoad(this)" accept=".jpg,.jpeg")
+						div(class="btn btn-primary") Выбрать файл
+					input(type="submit" value="Отправить" class="btn btn-primary")
+				</form>
+				div(id="preview")
+				img(src="/img/close.svg" class="close-popup")
 		.container-admin
 			h1(style="text-align: center") Панель администратора
+			div(class="control")
+				label(for="activ") Показывать не активные
+				input(type="checkbox" name="activ" checked id="activ")
 			div(class="admin-nav-header")
 				ul(class="nav nav-tabs" id="adminTab" role="tablist")
 					li(class="nav-item" role="presentation")
 						button(class="nav-link active" id="goods-tab" data-bs-toggle="tab" data-bs-target="#goods-tab-pane" type="button" role="tab" aria-controls="goods-tab-pane" aria-selected="true") Продукты
 					li(class="nav-item" role="presentation")
 						button(class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#category-tab-pane" type="button" role="tab" aria-controls="category-tab-pane" aria-selected="false") Категории
-			hr
+			//-hr
 			div(class="tab-content")
 				div(class="tab-pane fade show active" id="goods-tab-pane" role="tabpanel" aria-labelledby="goods-tab" tabindex="0")
 					table(class="table-goods")
 						thead
 							tr
-								th(id="filterCategory") Категория
-								th Название
-								th Фото
-								th Описание
-								th Цена
-								th Исп.
-								th Акц.
-						tbody
-							each item in goods
-								-const cat = category.find((elem)=>elem.id === item.category)
-								tr 
-									td #{cat.name}
-									td #{item.name}
-									td #{item.img}
-									td #{item.description}
-									td(class="currency") #{item.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-									td #{item.activ}
-									td #{item.stock}
+								th(style="width: 11.3%")
+									select(id="cur-category")
+										option(value="all") Все Категории
+										each item in category
+											option(value=item.id) #{item.name}
+								th(style="width: 15.1%") Название
+								th(style="width: 8.85%") Фото
+								th(style="width: 51.1%") Описание
+								th(style="width: 5.77%") Цена
+								th(style="width: 3.94%") Акт.
+								th(style="width: 3.94%") Акц.
+						tbody(id="listGoods")
+							//-each item in goods
+							//-	-const cat = category.find((elem)=>elem.id === item.category)
+							//-	tr 
+							//-		td(class="check")
+							//-			select(name="category")
+							//-				each cat in category
+							//-					if (cat.id === item.category)
+							//-						option(value=cat.id selected) #{cat.name}
+							//-					else
+							//-						option(value=cat.id) #{cat.name}
+							//-		td #{item.name}
+							//-		td
+							//-			button(class="show-img" data-url=item.img) См.
+							//-			button(class="download-img") Загр.
+							//-		td(class="description") #{item.description}
+							//-		td(class="currency") #{item.cost/*.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')*/}
+							//-		-let nameCheck = "check"+item.id
+							//-		td(class="check") 
+							//-			if (item.activ === 1)
+							//-				input(type="checkbox" name=nameCheck "checked")
+							//-			else
+							//-				input(type="checkbox" name=nameCheck)
+							//-		-nameCheck = "checkStock"+item.id
+							//-		td(class="check")
+							//-			if (item.stock === 1)
+							//-				input(type="checkbox" name=nameCheck "checked")
+							//-			else
+							//-				input(type="checkbox" name=nameCheck)
 				div(class="tab-pane fade" id="category-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
 					form(action="/signup" method="post" id="signupForm" enctype="multipart/form-data")
 						section
@@ -57,5 +102,8 @@ html(lang="ru")
 							label(for="current-password") Пароль:
 							input(id="current-password" name="password" type="password" autocomplete="current-password" required)
 						button(type="submit" class="btn btn-primary") Зарегистрироваться
+script(type='text/javascript').
+	inintCart(!{JSON.stringify(goods)}, !{JSON.stringify(category)});
+
 script
 	include ../public/js/admin.js

@@ -169,6 +169,19 @@ db.updateUserPassword = (salt, hash, userId) => {
   })
 };
 
+db.updateGoods = (id, field, value) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE goods SET ${field} = '${value}' WHERE id = '${id}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+
 //*************************************       RESET      ********************** */
 
 db.isReset = (userId) => {

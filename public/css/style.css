@@ -3,8 +3,12 @@
   /*flex-grow: 1;*/
 }
 
+#adminTab {
+  font-size: 1.5rem;
+}
+
 .container-admin {
-  max-width: 1700px;
+  width: 90%;
   margin: 0 auto 0 auto;
   /*flex-grow: 1;*/
 }
@@ -152,6 +156,7 @@ nav.nav {
   transition: 0.5s all;
 }
 
+.popup-upload,
 .popup-good,
 .popup-error {
   position: absolute;
@@ -161,6 +166,9 @@ nav.nav {
   background-color: beige;
   min-width: 400px;
   transition: 0.5s all;
+  min-height: 300px;
+  padding: 10px;
+  font-size: 25px;
 }
 
 .add-to-cart {
@@ -171,10 +179,34 @@ nav.nav {
   visibility: visible;
 }
 
+.popup-upload input,
+.popup-upload label {
+  width: 96%;
+  font-size: 25px;
+  margin: 2%;
+  text-align: center;
+}
+
+.input-file-list-remove {
+  color: red;
+  text-decoration: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
 .popup-login #loginTabContent,
 button {
   width: 100%;
   font-size: 25px;
+}
+
+.show-img,
+.download-img {
+  font-size: 1.2rem;
+  width: 100%;
 }
 
 #timer {
@@ -203,6 +235,10 @@ button {
   transform: translate(-50%, -50%);
   background-color: beige;
   min-width: 400px;
+}
+
+#preview {
+  position: relative;
 }
 
 .popup-error-name,
@@ -241,6 +277,7 @@ button {
   float: left;
 }
 
+.popup-upload.active,
 .popup-good.active,
 .popup-error.active {
   transform: translate(-50%, -50%) scale(1);
@@ -294,7 +331,13 @@ section.delivery {
 
 input[type=checkbox] {
   transform: scale(2);
-  margin-right: 10px;
+  margin: 10px;
+}
+
+.control {
+  padding: 10px;
+  border: 2px solid #999;
+  text-align: center;
 }
 
 .table-order,
@@ -328,11 +371,27 @@ input[type=checkbox] {
   text-align: right;
 }
 
+.check {
+  text-align: center;
+}
+
+td.edit {
+  background-color: rgb(253, 234, 237);
+}
+
 td {
   border: 1px solid grey;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 7px;
-  padding-right: 7px;
-  /*white-space: nowrap;*/
+  padding: 5px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#cur-category {
+  border: none;
+  font-weight: 700;
+  color: tomato;
 }

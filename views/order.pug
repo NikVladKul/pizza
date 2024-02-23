@@ -23,7 +23,7 @@ section(class="main")
 							td(class="item-center" id=val.id.toString()) #{val.quantity}
 							td(class="item-center") 
 								i(class="far fa-plus-square item-plus" data-goods_id=val.id.toString() style="cursor: pointer")
-							td(class="currency") #{val.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+							td(class="currency") #{val.cost/*.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')*/}
 							td(class="currency" id=val.id.toString()+"a") #{val.amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
 					tr 
 						td(colspan="5" class="bold") ИТОГО:

@@ -29,9 +29,11 @@ document.addEventListener('keydown', function (event) {
 //*****************************************LOCALSTORAGE  */
 
 function updateStorageCart() { // Обновляем корзину
-  localStorage.setItem('cart' + user.dataset.id, JSON.stringify(cart));
-  const encodedCart = encodeURIComponent(JSON.stringify(cart));
-  if (cartOrder) cartOrder.href = "/order?cart=" + encodedCart;
+  if (user) {
+    localStorage.setItem('cart' + user.dataset.id, JSON.stringify(cart));
+    const encodedCart = encodeURIComponent(JSON.stringify(cart));
+    if (cartOrder) cartOrder.href = "/order?cart=" + encodedCart;
+  }
 }
 
 if (logout) {//если выполнен вход
@@ -93,7 +95,7 @@ function fillPopupGood(good) { // Заполняем попап форму
     if (elems[i].classList.contains("id")) elems[i].dataset.id = good.id;
     if (elems[i].classList.contains("name")) elems[i].textContent = good.name;
     if (elems[i].classList.contains("description")) elems[i].innerHTML = good.description;
-    if (elems[i].classList.contains("cost")) elems[i].textContent = good.cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + "руб.";
+    if (elems[i].classList.contains("cost")) elems[i].textContent = good.cost/*.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')*/ + "руб.";
     if (elems[i].classList.contains("img")) elems[i].setAttribute("src", good.img);
   }
 }

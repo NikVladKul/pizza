@@ -47,7 +47,7 @@ function getGoodInCat(event) { // запрос: все продукты из в�
                 <a class="open-card open-popup" href="#">
                   <img class="card-img" src=${body[i].img} data-id=${body[i].id} alt=${body[i].name} />
                 </a>
-                <h2 class="card-text">${body[i].cost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}руб.</h2>
+                <h2 class="card-text">${body[i].cost/*.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')*/}руб.</h2>
               </div>
               <button class="btn btn-primary" data-id=${body[i].id}>В корзину</button>
             </div>
