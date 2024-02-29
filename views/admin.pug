@@ -7,35 +7,103 @@ html(lang="ru")
 	body
 		div(class="popup__bg")
 			div.container
+				div.popup-new-cat
+					.header
+						h2 Новая Категория
+					hr
+					form(action="/newcat" method="post" enctype="multipart/form-data" id="createCat") 
+						.control
+							label
+								span Название:
+								input(type="text" name="name" required)
+							label
+								span Активный:
+								input(type="checkbox" checked name="activ")
+						hr
+						input(type="submit" value="Создать" class="btn btn-primary" style="display: block")
+					img(src="/img/close.svg" class="close-popup")
+				div.popup-new
+					.header
+						h2 Новый продукт
+					hr
+					form(action="/newgoods" method="post" enctype="multipart/form-data" id="createGoods")
+						.control
+							label
+								span Категория:
+									select(id="new-category" name="category")
+										each item in category
+											option(value=item.id) #{item.name}
+							label
+								span Название:
+								input(type="text" name="name" required)
+						label
+							span Описание:
+							textarea(name="description" cols="60" rows="5" required)
+						.control
+							label
+								span Цена:
+								input(type="number" name="cost")
+							label
+								span Активный:
+								input(type="checkbox" checked name="activ")
+							label
+								span Акция:
+								input(type="checkbox" name="stock")
+						label(style="display: block")
+							div(id="previewNew")
+							input(type="file" name="filedata" id="fileInputNew" style="display:none" onchange="showLoad(this)" accept=".jpg,.jpeg")
+							div(class="btn btn-primary") Выбрать фото
+						hr
+						input(type="submit" value="Создать" class="btn btn-primary" style="display: block")
+					img(src="/img/close.svg" class="close-popup")
 				div(class="popup-good")
 					img(class="popup-form-good img" src="" alt="")
 					img(src="/img/close.svg" class="close-popup")
-			div.popup-upload
-				.header
-					h2 Выберите фото
-				hr
-				form(action="/upload" method="post" enctype="multipart/form-data" id="uploadImg")
-					label
-						input(type="file" name="filedata" id="fileInput" style="display:none" onchange="showLoad(this)" accept=".jpg,.jpeg")
-						div(class="btn btn-primary") Выбрать файл
-					input(type="submit" value="Отправить" class="btn btn-primary")
-				</form>
-				div(id="preview")
-				img(src="/img/close.svg" class="close-popup")
+				div.popup-upload
+					.header
+						h2 Выберите фото
+					hr
+					form(action="/upload" method="post" enctype="multipart/form-data" id="uploadImg")
+						label
+							div(id="preview")
+							input(type="file" name="filedata" id="fileInput" style="display:none" onchange="showLoad(this)" accept=".jpg,.jpeg")
+							div(class="btn btn-primary") Выбрать файл
+						input(type="submit" value="Отправить" class="btn btn-primary")
+					img(src="/img/close.svg" class="close-popup")
 		.container-admin
 			h1(style="text-align: center") Панель администратора
-			div(class="control")
-				label(for="activ") Показывать не активные
-				input(type="checkbox" name="activ" checked id="activ")
 			div(class="admin-nav-header")
 				ul(class="nav nav-tabs" id="adminTab" role="tablist")
 					li(class="nav-item" role="presentation")
-						button(class="nav-link active" id="goods-tab" data-bs-toggle="tab" data-bs-target="#goods-tab-pane" type="button" role="tab" aria-controls="goods-tab-pane" aria-selected="true") Продукты
+						button(class="nav-link active" id="category-tab" data-bs-toggle="tab" data-bs-target="#category-tab-pane" type="button" role="tab" aria-controls="category-tab-pane" aria-selected="true") Категории
 					li(class="nav-item" role="presentation")
-						button(class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#category-tab-pane" type="button" role="tab" aria-controls="category-tab-pane" aria-selected="false") Категории
-			//-hr
+						button(class="nav-link" id="goods-tab" data-bs-toggle="tab" data-bs-target="#goods-tab-pane" type="button" role="tab" aria-controls="goods-tab-pane" aria-selected="false") Продукты
+					li(class="nav-item" role="presentation")
+						button(class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user-tab-pane" type="button" role="tab" aria-controls="user-tab-pane" aria-selected="false") Пользователи
 			div(class="tab-content")
-				div(class="tab-pane fade show active" id="goods-tab-pane" role="tabpanel" aria-labelledby="goods-tab" tabindex="0")
+				div(class="tab-pane fade show active" id="category-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
+					div(class="control")
+						div
+							label(for="activ") Показывать не активные
+							input(type="checkbox" name="activ" checked id="activCat")
+						div
+							span(class="btn btn-primary" id="new-cat") Создать
+					table(class="table-category")
+						thead
+							tr
+								th Название
+								th Акт.
+						tbody(id="listCats")
+				div(class="tab-pane fade" id="goods-tab-pane" role="tabpanel" aria-labelledby="goods-tab" tabindex="0")
+					div(class="control")
+						div
+							label(for="activ") Показывать не активные
+							input(type="checkbox" name="activ" checked id="activ")
+						div
+							label(for="stock") Только в акции
+							input(type="checkbox" name="stock" id="stock")
+						div
+							span(class="btn btn-primary" id="new-goods") Создать
 					table(class="table-goods")
 						thead
 							tr
@@ -51,59 +119,24 @@ html(lang="ru")
 								th(style="width: 3.94%") Акт.
 								th(style="width: 3.94%") Акц.
 						tbody(id="listGoods")
-							//-each item in goods
-							//-	-const cat = category.find((elem)=>elem.id === item.category)
-							//-	tr 
-							//-		td(class="check")
-							//-			select(name="category")
-							//-				each cat in category
-							//-					if (cat.id === item.category)
-							//-						option(value=cat.id selected) #{cat.name}
-							//-					else
-							//-						option(value=cat.id) #{cat.name}
-							//-		td #{item.name}
-							//-		td
-							//-			button(class="show-img" data-url=item.img) См.
-							//-			button(class="download-img") Загр.
-							//-		td(class="description") #{item.description}
-							//-		td(class="currency") #{item.cost/*.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')*/}
-							//-		-let nameCheck = "check"+item.id
-							//-		td(class="check") 
-							//-			if (item.activ === 1)
-							//-				input(type="checkbox" name=nameCheck "checked")
-							//-			else
-							//-				input(type="checkbox" name=nameCheck)
-							//-		-nameCheck = "checkStock"+item.id
-							//-		td(class="check")
-							//-			if (item.stock === 1)
-							//-				input(type="checkbox" name=nameCheck "checked")
-							//-			else
-							//-				input(type="checkbox" name=nameCheck)
-				div(class="tab-pane fade" id="category-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
-					form(action="/signup" method="post" id="signupForm" enctype="multipart/form-data")
-						section
-							label(for="username") Имя:
-							input(id="username" name="username" type="text" autocomplete="on" required autofocus)
-						section
-							label(for="current-phone") Телефон:
-							input(class="tel" id="current-phone" name="phone" type="tel" autocomplete="on" required)
-							button(id="get-code" class="btn btn-primary" type="button") Получить код
-								p(id="timer")
-						section(id="code")
-							label(for="input-code") Код проверки:
-							input(id="input-code" name="code" type="text" required)
-						section
-							label(for="current-phone") Адрес:
-							input(id="current-addres" name="addres" type="text" autocomplete="on" required)
-						section
-							label(for="current-phone") email:
-							input(id="current-email" name="email" type="email" autocomplete="on" required)
-						section
-							label(for="current-password") Пароль:
-							input(id="current-password" name="password" type="password" autocomplete="current-password" required)
-						button(type="submit" class="btn btn-primary") Зарегистрироваться
+				div(class="tab-pane fade" id="user-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0")
+					div(class="control")
+						div
+							label(for="activ") Показывать не активные
+							input(type="checkbox" name="activ" checked id="activUser")
+					table(class="table-users")
+						thead
+							tr
+								th Имя
+								th Телефон
+								th e-mail
+								th Акт.
+								th Адм.
+								th Мен.
+								th Адрес
+						tbody(id="listUsers")
 script(type='text/javascript').
 	inintCart(!{JSON.stringify(goods)}, !{JSON.stringify(category)});
-
+	fillGoodsOfCat();
 script
 	include ../public/js/admin.js

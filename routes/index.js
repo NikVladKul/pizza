@@ -32,13 +32,17 @@ router.get('/cook', isCook, (req, res) => {
   res.render('cook');
 });
 
+router.get('/getusers', isAdmin, (req, res) => {
+  db.getAllUsers().then((result) => res.send(result.sort(sortArray('phone', false, (a) => a.toUpperCase())))).catch((err) => console.log(err));
+});
+
 
 router.get('/', (request, response) => { // стартовая страница
   fork.successRedirect = '/';
 
   let category;
   let goods;
-  db.getAllCategory()
+  db.getActivCategory()
     .then((result) => {
       if (result.length === 0) {
         category = [{ id: 0, name: 'Ничего нет...' }];
@@ -92,7 +96,7 @@ router.get('/sendcode', async function (request, response) {
   const number = request.headers.number.replace(/[\+\(\) ]/g, ""); //    '+7 (222) 222 2222'
   let code = randomCode();
   user.code = code;
-  console.log(number, code);
+  //console.log(number, code);
   let resSend = {};
   try {
     if (await sendToNumber(number + "@c.us", code)) {
@@ -142,10 +146,63 @@ router.get('/login-error', function (req, res, next) { // вход при оши
 
 router.post('/login', passport.authenticate('local', fork));
 
+router.post('/newcat', upload.none(), (req, res) => {
+  try {
+    const cat = {
+      name: req.body.name,
+      activ: (req.body.activ) ? 1 : 0,
+    };
+    db.addCat(cat).then((result) => {
+      res.send(result);
+    }).catch((err) => {
+      console.log(err);
+    });
+  } catch (error) {
+    res.send(false);
+    console.log(error);
+  }
+});
+
+router.post('/newgoods', upload.single('filedata'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(404).send("no file");
+    }
+    const compressedFileName = req.file.filename.split(".")[0];
+    const compressedImageFilePath = `./public/photo/${compressedFileName}.jpg`;
+    await sharp(req.file.path)
+      .jpeg({ quality: 25 })
+      .toFile(compressedImageFilePath)
+      .then(() => {
+        unlinkSync(`./upload/${compressedFileName}`);
+        const goods = {
+          name: req.body.name,
+          img: `/photo/${compressedFileName}.jpg`,
+          description: req.body.description,
+          cost: req.body.cost,
+          category: req.body.category,
+          activ: (req.body.activ) ? 1 : 0,
+          stock: (req.body.stock) ? 1 : 0
+        };
+        db.addGoods(goods).then((result) => {
+          result.img = `/photo/${compressedFileName}.jpg`;
+          res.send(result);
+        }).catch((err) => {
+          unlinkSync(`./public/photo/${compressedFileName}.jpg`);
+          console.log(err);
+        });
+      });
+  } catch (error) {
+    res.send(false);
+    console.log(error);
+  }
+
+});
+
 router.post('/upload', upload.single('filedata'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(404).send("Не корректный файл");
+      return res.status(404).send("Не корректный файл изображения");
     }
 
     const compressedFileName = req.file.filename.split(".")[0];
@@ -156,7 +213,7 @@ router.post('/upload', upload.single('filedata'), async (req, res) => {
       .toFile(compressedImageFilePath)
       .then(() => {
         unlinkSync(`./upload/${compressedFileName}`);
-        //unlinkSync(`./public${req.body.oldUrl}`);
+        unlinkSync(`./public${req.body.oldUrl}`);
         res.send(`/photo/${compressedFileName}.jpg`);
       });
   } catch (error) {
@@ -166,8 +223,9 @@ router.post('/upload', upload.single('filedata'), async (req, res) => {
 })
 
 router.post('/confirm-order', upload.none(), function (req, res, next) {
+  //console.log(req.user);
   const cart = JSON.parse(req.body.cart);
-  const user = JSON.parse(req.body.user);
+  const user = req.user;
   const amount = JSON.parse(req.body.amount);
   const delivery = (Boolean(req.body.delivery)) ? 1 : 0;
   const idOrder = Date.now().toString();
@@ -238,22 +296,36 @@ router.use("/mysql", async function (request, response) { // запросы к �
   if (request.query.goods_in_cat) {
     db.getGoodsInCategory(request.query.goods_in_cat)
       .then((result) => response.json(result));
-
-  } else if (request.query.good_id) {
-    db.getGoodId(request.query.good_id)
-      .then((result) => response.json(result));
-  } else if (request.query.goods_udate_id) {
+  } else if (request.query.cat_update_id) {
     const buffers = [];
     for await (const chunk of request) {
       buffers.push(chunk);
     }
     const data = Buffer.concat(buffers).toString();
     const param = JSON.parse(data); // парсим строку в json
-
-    //console.log(param);
-    db.updateGoods(request.query.goods_udate_id, param.field, param.value)
+    db.updateCat(request.query.cat_update_id, param.field, param.value)
       .then(result => response.json(result));
-    //response.json('');
+  } else if (request.query.good_id) {
+    db.getGoodId(request.query.good_id)
+      .then((result) => response.json(result));
+  } else if (request.query.goods_update_id) {
+    const buffers = [];
+    for await (const chunk of request) {
+      buffers.push(chunk);
+    }
+    const data = Buffer.concat(buffers).toString();
+    const param = JSON.parse(data); // парсим строку в json
+    db.updateGoods(request.query.goods_update_id, param.field, param.value)
+      .then(result => response.json(result));
+  } else if (request.query.users_update_id) {
+    const buffers = [];
+    for await (const chunk of request) {
+      buffers.push(chunk);
+    }
+    const data = Buffer.concat(buffers).toString();
+    const param = JSON.parse(data); // парсим строку в json
+    db.updateUsers(request.query.users_update_id, param.field, param.value)
+      .then(result => response.json(result));
   }
 });
 

@@ -156,6 +156,8 @@ nav.nav {
   transition: 0.5s all;
 }
 
+.popup-new-cat,
+.popup-new,
 .popup-upload,
 .popup-good,
 .popup-error {
@@ -237,7 +239,8 @@ button {
   min-width: 400px;
 }
 
-#preview {
+#preview,
+#previewNew {
   position: relative;
 }
 
@@ -277,6 +280,8 @@ button {
   float: left;
 }
 
+.popup-new-cat,
+.popup-new.active,
 .popup-upload.active,
 .popup-good.active,
 .popup-error.active {
@@ -337,22 +342,29 @@ input[type=checkbox] {
 .control {
   padding: 10px;
   border: 2px solid #999;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
 }
 
+.table-category,
 .table-order,
-.table-goods {
+.table-goods,
+.table-users {
   width: 100%;
   font-size: 1.5rem;
 }
 
+.table-category tr:nth-child(2n),
 .table-order tr:nth-child(2n),
-.table-goods tr:nth-child(2n) {
+.table-goods tr:nth-child(2n),
+.table-users tr:nth-child(2n) {
   background: beige;
 }
 
+.table-category th,
 .table-order th,
-.table-goods th {
+.table-goods th,
+.table-users th {
   border: 1px solid grey;
   text-align: center;
   padding-left: 7px;

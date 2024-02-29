@@ -8,6 +8,18 @@ let db = {};
 
 db.getAllCategory = () => {
   return new Promise((resolve, reject) => {
+    pool.query("SELECT id, name, activ FROM category", (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
+db.getActivCategory = () => {
+  return new Promise((resolve, reject) => {
     pool.query("SELECT id, name FROM category WHERE activ=1", (err, res) => {
       if (err) {
         console.log(err);
@@ -119,9 +131,46 @@ db.getUserEmail = (email) => {
   });
 };
 
+db.getAllUsers = () => {
+  return new Promise((resolve, reject) => {
+    let sql = "SELECT * FROM users";
+    pool.query(sql, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
 db.addUser = (user) => {
   return new Promise((resolve, reject) => {
     pool.query(`INSERT INTO users(name, passw, activ, phone, email, addres, salt) VALUES('${user.name}', '${user.passw}', 1, '${user.phone}', '${user.email}', '${user.addres}', '${user.salt}')`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.addGoods = (goods) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`INSERT INTO goods(name, img, description, cost, category, activ, stock) VALUES('${goods.name}', '${goods.img}', '${goods.description}', '${goods.cost}', '${goods.category}', '${goods.activ}', '${goods.stock}')`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.addCat = (cat) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`INSERT INTO category(name, activ) VALUES('${cat.name}', '${cat.activ}')`, (err, res) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -146,7 +195,7 @@ db.addOrder = (idOrder, goodsRow) => {
 
 db.addOrderHead = (idOrder, user, amount, delivery) => {
   return new Promise((resolve, reject) => {
-    pool.query(`INSERT INTO headorders(id, iduser, totalamount, delivery) VALUES('${idOrder}', '${user}', '${amount}', '${delivery}')`, (err, res) => {
+    pool.query(`INSERT INTO headorders(id, iduser, totalamount, delivery) VALUES('${idOrder}', '${user.id}', '${amount}', '${delivery}')`, (err, res) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -181,6 +230,29 @@ db.updateGoods = (id, field, value) => {
   })
 };
 
+db.updateCat = (id, field, value) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE category SET ${field} = '${value}' WHERE id = '${id}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.updateUsers = (id, field, value) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE users SET ${field} = '${value}' WHERE id = '${id}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
 
 //*************************************       RESET      ********************** */
 
