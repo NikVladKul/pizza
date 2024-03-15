@@ -7,6 +7,7 @@ passport.use('local', new LocalStrategy({ usernameField: 'phone' }, (username, p
   db.getUserPhone(username)
     .then((user) => {
       if (!user) return cb(null, false, { message: '!Phone' });
+      if (user.activ === 0) return cb(null, false, { message: '!Activ' });
 
       const isValid = validPassword(password, user.passw, user.salt);
 

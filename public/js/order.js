@@ -26,7 +26,7 @@ function cartPlus(event) {
   const goodsId = this.dataset.goods_id;
   goods[goodsId].quantity++;// количество
   goods[goodsId].amount = goods[goodsId].cost * goods[goodsId].quantity;// сумма
-  total += goods[goodsId].cost;// ИТОГО
+  total += +goods[goodsId].cost;// ИТОГО
   amount.value = total;
   updateTable(goodsId);
 }
@@ -47,4 +47,5 @@ function updateTable(goodsId) {
   }
   cartElem.value = JSON.stringify(goods);
   updateStorageCart();
+  if (Object.keys(goods).length === 0) window.location.href = "/";
 }

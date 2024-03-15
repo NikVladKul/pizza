@@ -111,7 +111,7 @@ db.createTableOrders = () => {
                     goods int DEFAULT NULL, 
                     quantity int DEFAULT NULL, 
                     cost int DEFAULT NULL, 
-                    ready tinyint DEFAULT NULL) 
+                    ready tinyint DEFAULT 0) 
                     ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
       if (err) {
         console.log('Ошибка сервера');
@@ -133,7 +133,7 @@ db.createTableHeadOrders = () => {
                     iduser int DEFAULT NULL, 
                     totalamount int DEFAULT NULL, 
                     delivery tinyint DEFAULT NULL,
-                    ready tinyint DEFAULT NULL) 
+                    ready tinyint DEFAULT 0) 
                     ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci`, function (err, res) {
       if (err) {
         console.log('Ошибка сервера');

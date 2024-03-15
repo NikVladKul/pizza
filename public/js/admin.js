@@ -20,6 +20,8 @@ const createGoods = document.getElementById('createGoods');// форма соз�
 const createCat = document.getElementById('createCat');// форма создания нового goods
 const fileInput = document.getElementById('fileInput');// инпут загрузка фото
 const fileInputNew = document.getElementById('fileInputNew');// инпут загрузка фото для нового
+import updateDb from "../js/lib/libadmin.js";
+
 let elemLoad = '';
 
 checkActiv.addEventListener('change', renderTable);
@@ -183,36 +185,6 @@ const editable = {
   }
 };
 
-function updateDb(id, field, value, table) {
-  let url = "";
-  url = `/mysql?${table}_update_id=` + id;
-  //if (goods) url = "/mysql?goods_udate_id=" + id;
-  //else if (gods === "users") url = "/mysql?users_udate_id=" + id;
-  //else url = "/mysql?cat_update_id=" + id;
-  const param = {
-    field: field,
-    value: value
-  }
-  fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(param)
-  })
-    .then(() => {
-      //UPDATE goods goodsOfCat
-      if (table === "goods") {
-        allGoods.find((x) => x.id === +id)[field] = value;
-        fillGoodsOfCat();
-      }
-      else if (table === "users") {
-        allUsers.find((x) => x.id === +id)[field] = value;
-      }
-      else if (table === "cat") {
-        allCats.find((x) => x.id === +id)[field] = value;
-      }
-    })
-    .catch(err => console.log(err));
-}
-
 document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
   if (e.target === popupBg) { // Если цель клика - фот, то:
     closePopup();
@@ -286,7 +258,7 @@ function renderUsers() {
   for (let i = 0; i < allUsers.length; i++) {
     if ((!checkActivUser.checked) && (allUsers[i].activ === 0)) continue;
     const newRow = containerUsers.insertRow();
-    newCell = newRow.insertCell();
+    let newCell = newRow.insertCell();
     newCell.innerHTML = allUsers[i].name;
     newCell = newRow.insertCell();
     newCell.innerHTML = allUsers[i].phone;
@@ -314,7 +286,7 @@ function renderCat() {
   for (let i = 0; i < allCats.length; i++) {
     if ((!checkActivCat.checked) && (allCats[i].activ === 0)) continue;
     const newRow = containerCat.insertRow();
-    newCell = newRow.insertCell();
+    let newCell = newRow.insertCell();
     newCell.dataset.id = allCats[i].id;
     newCell.dataset.field = "name";
     newCell.innerHTML = allCats[i].name;
@@ -338,7 +310,7 @@ function renderTable() {
     newCell.classList.add("check");
     let sel = newCell.children[0];
     for (let j = 0; j < allCats.length; j++) {
-      opt = document.createElement('option');
+      let opt = document.createElement('option');
       opt.value = allCats[j].id;
       opt.innerHTML = allCats[j].name;
       opt.selected = (allCats[j].id === goods[i].category);

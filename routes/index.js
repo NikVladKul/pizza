@@ -11,12 +11,33 @@ const db = require('../modules/conf/dbmysql').db;
 const sharp = require("sharp");
 const unlinkSync = require("fs").unlinkSync;
 sharp.cache(false);
+let cooks = [];
+
 
 let user = { phone: "", code: "" };
 
 let fork = { successRedirect: '/', failureRedirect: '/login-error', failureMessage: true };
 
 // *************************** GET запросы ****************************
+router.get('/getorders', isCook, (req, res) => {
+  db.getHeadOrders()
+    .then(async (head) => {
+      const orders = await getList(head);
+      //console.log(orders);
+      res.json(orders);
+    }).catch((err) => console.log(err));
+});
+
+async function getList(headOrders) {
+  for (let i = 0; i < headOrders.length; i++) {
+    await db.getListOrders(headOrders[i].id)
+      .then((list) => {
+        headOrders[i].list = list;
+      }).catch((err) => console.log(err));
+  }
+  return headOrders;
+}
+
 router.get('/admin', isAdmin, (req, res) => {
   db.getAllGoods()
     .then((goods) => {
@@ -26,6 +47,31 @@ router.get('/admin', isAdmin, (req, res) => {
           res.render('admin', { "goods": goods.sort(sortArray('name', false, (a) => a.toUpperCase())), "category": category });
         }).catch((err) => console.log(err));
     });
+});
+
+router.get('/events', isCook, (req, res) => {
+  const headers = {
+    // Тип соединения 'text/event-stream' необходим для SSE
+    'Content-Type': 'text/event-stream',
+    'Access-Control-Allow-Origin': '*',
+    // Отставляем соединение открытым 'keep-alive'
+    'Connection': 'keep-alive',
+    'Cache-Control': 'no-cache'
+  };
+  // Записываем в заголовок статус успешного ответа 200
+  res.writeHead(200, headers);
+
+  const clientId = Date.now() + '-' + Math.floor(Math.random() * 1000000000);
+  const newClient = {
+    id: clientId,
+    res,
+  };
+  cooks.push(newClient);
+  req.on('close', () => {
+    cooks = cooks.filter(client => client.id !== clientId);
+  });
+  const sendData = `data: ${JSON.stringify(cooks.length)}\n\n`;
+  res.write(sendData);
 });
 
 router.get('/cook', isCook, (req, res) => {
@@ -136,6 +182,9 @@ router.get('/login-error', function (req, res, next) { // вход при оши
   if (req.session.messages[0] === '!Phone') {
     msg = { "message": 'Номер не зарегистрирован!' }
   }
+  if (req.session.messages[0] === '!Activ') {
+    msg = { "message": 'Вы заблокированы!' }
+  }
   if (req.session.messages[0] === '!Password') {
     msg = { "message": 'Не верный пароль!' }
   }
@@ -222,7 +271,7 @@ router.post('/upload', upload.single('filedata'), async (req, res) => {
   }
 })
 
-router.post('/confirm-order', upload.none(), function (req, res, next) {
+router.post('/confirm-order', upload.none(), isAuth, function (req, res, next) {
   //console.log(req.user);
   const cart = JSON.parse(req.body.cart);
   const user = req.user;
@@ -241,6 +290,7 @@ router.post('/confirm-order', upload.none(), function (req, res, next) {
       }
       Promise.all(promises)
         .then(() => {
+          sendToAllUsers();
           //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           //ПОСЛАТЬ СООБЩЕНИЕ В КУХНЮ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -251,6 +301,12 @@ router.post('/confirm-order', upload.none(), function (req, res, next) {
     });
 
 });
+
+function sendToAllUsers() {
+  for (let i = 0; i < cooks.length; i++) {
+    cooks[i].res.write(`data: RENDER\n\n`);
+  }
+}
 
 router.post('/logout', function (req, res, next) {
   req.logout(function (err) {
@@ -295,7 +351,8 @@ router.post('/signup', upload.none(), function (req, res, next) {
 router.use("/mysql", async function (request, response) { // запросы к базе
   if (request.query.goods_in_cat) {
     db.getGoodsInCategory(request.query.goods_in_cat)
-      .then((result) => response.json(result));
+      .then((result) => response.json(result))
+      .catch((err) => console.log(err));
   } else if (request.query.cat_update_id) {
     const buffers = [];
     for await (const chunk of request) {
@@ -304,10 +361,12 @@ router.use("/mysql", async function (request, response) { // запросы к �
     const data = Buffer.concat(buffers).toString();
     const param = JSON.parse(data); // парсим строку в json
     db.updateCat(request.query.cat_update_id, param.field, param.value)
-      .then(result => response.json(result));
+      .then(result => response.json(result))
+      .catch((err) => console.log(err));
   } else if (request.query.good_id) {
     db.getGoodId(request.query.good_id)
-      .then((result) => response.json(result));
+      .then((result) => response.json(result))
+      .catch((err) => console.log(err));
   } else if (request.query.goods_update_id) {
     const buffers = [];
     for await (const chunk of request) {
@@ -316,7 +375,8 @@ router.use("/mysql", async function (request, response) { // запросы к �
     const data = Buffer.concat(buffers).toString();
     const param = JSON.parse(data); // парсим строку в json
     db.updateGoods(request.query.goods_update_id, param.field, param.value)
-      .then(result => response.json(result));
+      .then(result => response.json(result))
+      .catch((err) => console.log(err));
   } else if (request.query.users_update_id) {
     const buffers = [];
     for await (const chunk of request) {
@@ -325,7 +385,24 @@ router.use("/mysql", async function (request, response) { // запросы к �
     const data = Buffer.concat(buffers).toString();
     const param = JSON.parse(data); // парсим строку в json
     db.updateUsers(request.query.users_update_id, param.field, param.value)
-      .then(result => response.json(result));
+      .then(result => response.json(result))
+      .catch((err) => console.log(err));
+  } else if (request.query.orders_update_id) {
+    const buffers = [];
+    for await (const chunk of request) {
+      buffers.push(chunk);
+    }
+    const data = Buffer.concat(buffers).toString();
+    const param = JSON.parse(data); // парсим строку в json
+    db.updateOrders(param.order, param.field, param.value, request.query.orders_update_id)
+      .then(() => {
+        db.getUniqOrders(param.order)
+          .then(result => {
+            //console.log(result.length + " / " + param.value);
+            db.updateHeadOrders(param.order, (result.length === param.value) ? 1 : 0)
+              .then(res => response.json(res.changedRows));
+          });
+      }).catch((err) => console.log(err));
   }
 });
 

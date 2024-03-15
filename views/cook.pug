@@ -1,8 +1,28 @@
+doctype html
 html(lang="ru")
 	head
 		include head
 	body
 		.container 
 			h1(style="text-align: center") Панель менеджера
-script
+			hr
+			div(class="control")
+				div
+					label(for="hideReady") Скрыть выполненые
+					input(type="checkbox" name="hideReady" id="hideReady")
+				div
+					label(for="days") Показывать за
+					input(type="number" step="1" min="1" name="days" id="days" value=1)
+					label(for="days") дней
+			table(class="table-head-orders" style="width: 100%")
+				thead
+					tr
+						th(style="width: 15%") Дата/время
+						th(style="width: 15%") Имя
+						th(style="width: 35%") Адрес
+						th(style="width: 15%") Телефон
+						th(style="width: 10%") Доставка
+						th(style="width: 10%") Готов
+				tbody(id="listOrders")
+script(type="module")
 	include ../public/js/cook.js

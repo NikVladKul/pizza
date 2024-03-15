@@ -30,6 +30,30 @@ db.getActivCategory = () => {
   });
 };
 
+db.getHeadOrders = () => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT headorders.id, addres, name, phone, delivery, ready FROM headorders, users WHERE (${+Date.now().toString()}-headorders.id)/86400000<1 AND headorders.iduser=users.id`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
+db.getListOrders = (idOrders) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`SELECT quantity, ready, goods.name, goods.id, category.name AS category FROM orders, goods, category WHERE orders.id=${idOrders} AND orders.goods=goods.id AND goods.category=category.id`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
 db.getGoodsInCategory = (cat) => {
   return new Promise((resolve, reject) => {
     pool.query("SELECT * FROM goods WHERE (category=" + cat + " AND activ=1)", (err, res) => {
@@ -144,6 +168,19 @@ db.getAllUsers = () => {
   });
 };
 
+db.getUniqOrders = (id) => {
+  return new Promise((resolve, reject) => {
+    let sql = "SELECT DISTINCT id, ready FROM orders WHERE id=" + id;
+    pool.query(sql, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+};
+
 db.addUser = (user) => {
   return new Promise((resolve, reject) => {
     pool.query(`INSERT INTO users(name, passw, activ, phone, email, addres, salt) VALUES('${user.name}', '${user.passw}', 1, '${user.phone}', '${user.email}', '${user.addres}', '${user.salt}')`, (err, res) => {
@@ -245,6 +282,30 @@ db.updateCat = (id, field, value) => {
 db.updateUsers = (id, field, value) => {
   return new Promise((resolve, reject) => {
     pool.query(`UPDATE users SET ${field} = '${value}' WHERE id = '${id}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.updateOrders = (idOrder, field, value, idGoods) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE orders SET ${field} = '${value}' WHERE id = '${idOrder}' AND goods = '${idGoods}'`, (err, res) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      resolve(res);
+    });
+  })
+};
+
+db.updateHeadOrders = (idOrder, value) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`UPDATE headorders SET ready = '${value}' WHERE id = '${idOrder}'`, (err, res) => {
       if (err) {
         console.log(err);
         reject(err);
