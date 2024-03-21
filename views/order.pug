@@ -17,7 +17,7 @@ section(class="main")
 				tbody
 					each val in goods
 						tr
-							td(data-id=val.id.toString() style="cursor: pointer") #{val.name}
+							td(data-id=val.id.toString() style="cursor: pointer" class="name") #{val.name}
 							td(class="item-center") 
 								i(class="far fa-minus-square item-minus" data-goods_id=val.id.toString() style="cursor: pointer")
 							td(class="item-center" id=val.id.toString()) #{val.quantity}

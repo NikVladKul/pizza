@@ -164,7 +164,6 @@ nav.nav {
   position: absolute;
   top: 50%;
   left: 50%;
-  height: 100%;
   overflow: auto;
   transform: translate(-50%, -50%) scale(0);
   background-color: beige;
@@ -173,6 +172,10 @@ nav.nav {
   min-height: 300px;
   padding: 10px;
   font-size: 25px;
+}
+
+.popup-good {
+  height: 100%;
 }
 
 .add-to-cart {
@@ -282,7 +285,7 @@ button {
   float: left;
 }
 
-.popup-new-cat,
+.popup-new-cat.active,
 .popup-new.active,
 .popup-upload.active,
 .popup-good.active,
@@ -336,7 +339,7 @@ section.delivery {
   text-align: center;
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
   transform: scale(2);
   margin: 10px;
 }
@@ -421,7 +424,7 @@ td {
 
 label.rollup:before {
   content: "";
-  background-image: url('../img/minus.svg');
+  background-image: url("../img/minus.svg");
   background-repeat: no-repeat;
   background-position: center;
   display: inline-block;
@@ -437,12 +440,12 @@ label.rollup:before {
   display: none;
 }
 
-input:checked+label:before {
-  background-image: url('../img/plus.svg');
+input:checked + label:before {
+  background-image: url("../img/plus.svg");
 }
 
-input[type=number]#days::-webkit-inner-spin-button,
-input[type=number]#days::-webkit-outer-spin-button {
+input[type="number"]#days::-webkit-inner-spin-button,
+input[type="number"]#days::-webkit-outer-spin-button {
   opacity: 1;
 }
 

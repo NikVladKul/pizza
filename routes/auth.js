@@ -1,11 +1,11 @@
 module.exports.isAuth = (req, res, next) => {
   if (req.isAuthenticated()) {
-    console.log(req.user);
+    //console.log(req.user);
     next();
   } else {
-    res.redirect('/login-fail');
+    res.redirect("/login-fail");
   }
-}
+};
 
 module.exports.isAdmin = (req, res, next) => {
   if (req.isAuthenticated() && req.user.isadmin === 1) {
@@ -13,20 +13,19 @@ module.exports.isAdmin = (req, res, next) => {
   } else {
     //res.locals.msg = 'У вас не достаточно прав!';
     //console.log(res.locals);
-    let msg = encodeURIComponent('У вас не достаточно прав');
+    let msg = encodeURIComponent("У вас не достаточно прав");
     //res.json({ msg: 'У вас не достаточно прав!' });
-    res.redirect('/login-fail?msg=' + msg);
+    res.redirect("/login-fail?msg=" + msg);
   }
-}
+};
 
 module.exports.isCook = (req, res, next) => {
   if (req.isAuthenticated() && req.user.iscook === 1) {
     next();
   } else {
-    res.redirect('/login-fail');
+    res.redirect("/login-fail");
   }
-}
-
+};
 
 //module.exports.isAdmin = (req, res, next) => {
 //  if (req.isAuthenticated() && req.user.admin) {
