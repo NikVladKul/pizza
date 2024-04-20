@@ -2,10 +2,10 @@ const mysql = require("mysql2");
 const genPassword = require("../lib/crypto").genPassword;
 
 let pool = mysql.createPool({
-  host: process.env.DB_MYSQL_HOST,
-  user: process.env.DB_MYSQL_USER,
-  password: process.env.DB_MYSQL_PASSWORD,
-  //database: process.env.DB_MYSQL_DATABASE,
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
   waitForConnections: true,
   connectionLimit: 10, // max number of concurrent conections
   queueLimit: 0, // max number of conections on queue (0 = limitless)
@@ -17,7 +17,7 @@ db.createTableWps = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица WSP_session      */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.wsp_sessions (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.wsp_sessions (
                     id bigint unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                     session_name varchar(255) NOT NULL, 
                     data longblob,
@@ -43,7 +43,7 @@ db.createTableReset = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица reset      */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.reset (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.reset (
                     id int AUTO_INCREMENT PRIMARY KEY,
                     token varchar(32) NOT NULL,
                     created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,7 +67,7 @@ db.createTableCategory = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Category  категории продуктов    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.category (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.category (
                     id int AUTO_INCREMENT PRIMARY KEY, 
                     name varchar(200) DEFAULT NULL, 
                     img varchar(500) DEFAULT NULL,
@@ -92,7 +92,7 @@ db.createTableGoods = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Goods  продукты    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.goods (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.goods (
                     id int AUTO_INCREMENT PRIMARY KEY, 
                     name varchar(300) DEFAULT NULL, 
                     img varchar(500) DEFAULT NULL,
@@ -120,7 +120,7 @@ db.createTableOrders = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Goods  продукты    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.orders (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.orders (
                     id varchar(20) DEFAULT NULL, 
                     goods int DEFAULT NULL, 
                     quantity int DEFAULT NULL, 
@@ -145,7 +145,7 @@ db.createTableHeadOrders = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Goods  продукты    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.headorders (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.headorders (
                     id varchar(20) PRIMARY KEY, 
                     iduser int DEFAULT NULL, 
                     totalamount int DEFAULT NULL, 
@@ -171,7 +171,7 @@ db.createTableUsers = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Users  пользователи    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.users (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.users (
                 id int AUTO_INCREMENT PRIMARY KEY,
                 name varchar(100) DEFAULT NULL,
                 passw varchar(128) DEFAULT NULL,
@@ -203,7 +203,7 @@ db.createTableUsers = () => {
 db.createBase = () => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `CREATE DATABASE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}`,
+      `CREATE DATABASE IF NOT EXISTS ${process.env.MYSQLDATABASE}`,
       (err, res) => {
         if (err) {
           reject(err);
@@ -230,7 +230,7 @@ db.createTableConstatnts = () => {
   return new Promise((resolve, reject) => {
     //***********    Таблица Goods  продукты    */
     pool.query(
-      `CREATE TABLE IF NOT EXISTS ${process.env.DB_MYSQL_DATABASE}.constants (
+      `CREATE TABLE IF NOT EXISTS ${process.env.MYSQLDATABASE}.constants (
                     namesite varchar(50) DEFAULT NULL, 
                     slogan varchar(50) DEFAULT NULL, 
                     daliverycost int DEFAULT NULL)
