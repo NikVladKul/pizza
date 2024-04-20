@@ -459,10 +459,11 @@ db.updateReset = (token, userId) => {
 
 createDb().then(
   (pool = mysql.createPool({
-    host: process.env.DB_MYSQL_HOST,
-    user: process.env.DB_MYSQL_USER,
-    password: process.env.DB_MYSQL_PASSWORD,
-    database: process.env.DB_MYSQL_DATABASE,
+    host: process.env.DB_MYSQL_HOST || "roundhouse.proxy.rlwy.net",
+    user: process.env.DB_MYSQL_USER || "root",
+    password:
+      process.env.DB_MYSQL_PASSWORD || "bZCMogsRtBqOnzDcAFHlwfekkkltNMyb",
+    database: process.env.DB_MYSQL_DATABASE || "railway",
     waitForConnections: true,
     connectionLimit: 10, // max number of concurrent conections
     queueLimit: 0, // max number of conections on queue (0 = limitless)
