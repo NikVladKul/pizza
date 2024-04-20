@@ -58,11 +58,12 @@ app.use(function (err, req, res, next) {
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(PORT, "0.0.0.0", () => {
+const port = process.env.PORT || 3000;
+httpServer.listen(port, "0.0.0.0", () => {
   console.log(`HTTP слушает ${process.env.PORT_HTTP}`);
 });
 // For https
-httpsServer.listen(PORT, "0.0.0.0", () => {
+httpsServer.listen(port, "0.0.0.0", () => {
   console.log(`HTTPS слушает ${process.env.PORT_HTTPS}`);
 });
 
