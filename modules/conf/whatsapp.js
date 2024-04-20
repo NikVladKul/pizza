@@ -25,12 +25,18 @@ const pool = mysql.createPool({
 
 const store = new MysqlStore({ pool: pool, tableInfo: tableInfo });
 
+const wwebVersion = "2.2408.1";
+
 const client = new Client({
   authStrategy: new RemoteAuth({
     store: store,
     backupSyncIntervalMs: 3600000,
     session: "RemoteAuth",
   }),
+  webVersionCache: {
+    type: "remote",
+    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+  },
   //puppeteer: { headless: false }
 });
 
