@@ -59,9 +59,9 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 const port = process.env.PORT || 3000;
-httpServer.listen(port, "0.0.0.0", () => {
-  console.log(`HTTP слушает ${process.env.PORT_HTTP}`);
-});
+//httpServer.listen(port, "0.0.0.0", () => {
+//  console.log(`HTTP слушает ${process.env.PORT_HTTP}`);
+//});
 // For https
 httpsServer.listen(port, "0.0.0.0", () => {
   console.log(`HTTPS слушает ${process.env.PORT_HTTPS}`);
